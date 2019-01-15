@@ -88,7 +88,7 @@ public class Server4Terminal {
 		initEnvriment();
 		//添加JVM钩子
 		addHook();
-		
+		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");//避免CPU使用率达到100%
 		//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动
 		new Thread(new Runnable() {
 			
