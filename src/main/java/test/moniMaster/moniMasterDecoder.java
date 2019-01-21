@@ -29,6 +29,7 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 			/**
 			 * 是网关登录报文，模拟前置暂时没有处理，真实前置需要写缓存等.....
 			 */
+			System.out.println("网关登录成功");
 		}else{
 			//解码真实下行报文体（68...16）信息到ChannelData对象
 			ByteBuf contentBuf = decodeSocketData(in);

@@ -2,6 +2,7 @@ package gate.codec;
 
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 
 import gate.base.chachequeue.CacheQueue;
 import gate.base.constant.ConstantValue;
@@ -36,7 +37,7 @@ public class Gate2MasterEncoder extends MessageToByteEncoder<ChannelData>{
 		/**
 		 * 组网关报头
 		 */
-		String ipAddress = msg.getIpAddress().replaceAll("\\/", "");
+		String ipAddress = msg.getIpAddress();//.replaceAll("\\/", "");
 		System.out.println("Terminal ipAddress===="+ipAddress);
 		int count = CacheQueue.ipCountRelationCache.get(ipAddress);
 		
@@ -48,19 +49,31 @@ public class Gate2MasterEncoder extends MessageToByteEncoder<ChannelData>{
 		headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
 		headBuf.writeInt16(Integer.valueOf(len + 2 ));//整个长度
 		headBuf.writeInt8(Integer.valueOf(1).byteValue());//type
-		headBuf.writeInt8(Integer.valueOf(0).byteValue());//protocolType
-		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
-		for(int i = 0; i < 3; i++) {  //12个字节的00
-			headBuf.writeInt32(0);
+		if(ipAddress.split("\\|")[0].contains(".")){
+			headBuf.writeInt8(Integer.valueOf(0).byteValue());//protocolType
+		}else{
+			headBuf.writeInt8(Integer.valueOf(0+(1<<7)).byteValue());//protocolType
 		}
 		
-		byte[] bs = Inet4Address.getByName(ipAddress.split(":")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
-		headBuf.writeInt8(bs[0]);
-		headBuf.writeInt8(bs[1]);
-		headBuf.writeInt8(bs[2]);
-		headBuf.writeInt8(bs[3]);
-		headBuf.writeInt16(Integer.parseInt(ipAddress.split(":")[1]));//port  两个字节表示端口号
-		headBuf.writeInt32(count);//count  4个字节的count
+		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
+		if(ipAddress.split("\\|")[0].contains(".")){
+			for(int i = 0; i < 3; i++) {
+				headBuf.writeInt32(0);
+			}
+			byte[] bs = Inet6Address.getByName(ipAddress.split("\\|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
+			headBuf.writeInt8(bs[0]);
+			headBuf.writeInt8(bs[1]);
+			headBuf.writeInt8(bs[2]);
+			headBuf.writeInt8(bs[3]);
+		}else{
+			byte[] bs = Inet6Address.getByName(ipAddress.split("\\|")[0]).getAddress();
+			for(int i = 0; i < 16; i++){
+				headBuf.writeInt8(bs[i]);
+			}
+		}
+		
+		headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port
+		headBuf.writeInt32(count);//count
 
 		ByteBuf outData = Unpooled.directBuffer();
 		outData.writeBytes(headBuf.getDataBuffer());

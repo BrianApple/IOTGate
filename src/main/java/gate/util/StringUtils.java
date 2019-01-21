@@ -654,5 +654,8 @@ public class StringUtils {
 		}
 		return (param0 == null) && (pram1 == null);
 	}
-
+	
+	public static String formatIpAddress(String ip,String port){
+		return String.format("%s|%s",ip.trim(),port.trim());
+	}
 }

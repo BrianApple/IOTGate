@@ -1,5 +1,7 @@
 package gate.server.handler;
 
+import java.net.InetSocketAddress;
+
 import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
@@ -24,7 +26,9 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
 		Channel channel = ctx.channel();
-		String clientIpAddress = ctx.channel().remoteAddress().toString().replaceAll("\\/", "");// clientIpAddress = "127.0.0.1:53956"
+		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String clientIpAddress = ipAddress;// ctx.channel().remoteAddress().toString().replaceAll("\\/", "");// clientIpAddress = "127.0.0.1:53956"
 		Integer count = CacheQueue.ipCountRelationCache.get(clientIpAddress);
 		if(count != null && count.intValue() < 10000){
 			CacheQueue.ipCountRelationCache.put(clientIpAddress, count+1);
@@ -40,7 +44,10 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		/**
 		 * 下线时删除缓存中对应的client的缓存
 		 */
-		String clientIpAddress = ctx.channel().remoteAddress().toString().replaceAll("\\/", "");// clientIpAddress = "127.0.0.1:53956"
+		Channel channel = ctx.channel();
+		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String clientIpAddress = ipAddress;
 		ClientChannelCache.removeOne(clientIpAddress);
 	}
 
@@ -67,7 +74,10 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		/**
 		 * 发生异常时删除缓存中对应的client的缓存
 		 */
-		String clientIpAddress = ctx.channel().remoteAddress().toString().replaceAll("\\/", "");// clientIpAddress = "127.0.0.1:53956"
+		Channel channel = ctx.channel();
+		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String clientIpAddress = ipAddress;
 		ClientChannelCache.removeOne(clientIpAddress);
 		cause.printStackTrace();
 	}
@@ -76,13 +86,16 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 	 */
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-		if (evt instanceof IdleStateEvent) {  
+		if (evt instanceof IdleStateEvent) {
 			IdleState state = ((IdleStateEvent) evt).state();
 			if(state == state.READER_IDLE ){
 				ChannelFuture fcutrue =  ctx.close();
 				fcutrue.addListener(new ChannelFutureListener() {
 					public void operationComplete(ChannelFuture future) throws Exception {
-						String key = future.channel().remoteAddress().toString().replaceAll("\\/", "");
+						Channel channel = future.channel();
+						InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+						String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+						String key = ipAddress;
 						System.out.println(key+"心跳超时下线成功....");
 //						ClientChannelCache.removeOne(key);
 					}

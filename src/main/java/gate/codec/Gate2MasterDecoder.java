@@ -1,13 +1,13 @@
 package gate.codec;
 
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 import java.util.List;
 
-import gate.base.cache.ClientChannelCache;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 /**
@@ -52,18 +52,40 @@ public class Gate2MasterDecoder  extends ByteToMessageDecoder{
 					int socketDataLen = readLenArea(in);
 					if(in.readableBytes() >= (socketDataLen+25) ){
 						//报文完整
-						in.skipBytes(15);//直接将读指针跳到终端ip处
+						in.skipBytes(1);
+						boolean isIPV4 = true;
+						{
+							int sig = in.readByte()&0xFF;
+							int type = sig >> 7 & 1;
+							isIPV4 = type == 0	? true : false;					
+						}
 						clientIpAddress = new StringBuilder();
-						clientIpAddress.append(in.readByte()&0xFF);  //ip地址需要转成10进制数
-						clientIpAddress.append(".");
-						clientIpAddress.append(in.readByte()&0xFF);
-						clientIpAddress.append(".");
-						clientIpAddress.append(in.readByte()&0xFF);
-						clientIpAddress.append(".");
-						clientIpAddress.append(in.readByte()&0xFF);
-						clientIpAddress.append(":");
+						if(isIPV4){
+							in.skipBytes(13);
+							clientIpAddress.append(in.readByte()&0xFF);  //ip地址需要转成10进制数
+							clientIpAddress.append(".");
+							clientIpAddress.append(in.readByte()&0xFF);
+							clientIpAddress.append(".");
+							clientIpAddress.append(in.readByte()&0xFF);
+							clientIpAddress.append(".");
+							clientIpAddress.append(in.readByte()&0xFF);
+							
+							
+						}else{
+							in.skipBytes(1);
+							byte[] dataTemp = new byte[16];
+							for(int i = 0 ; i < 16 ;i++){
+								dataTemp[i] = in.readByte();
+							}
+							try {
+								clientIpAddress.append(Inet6Address.getByAddress(dataTemp).getHostAddress());
+							} catch (UnknownHostException e) {
+								e.printStackTrace();
+								return null;
+							}
+						}
+						clientIpAddress.append("|");
 						clientIpAddress.append(readLenArea(in));
-						
 						return clientIpAddress.toString();
 					}else{
 						//报文不完整
@@ -120,35 +142,23 @@ public class Gate2MasterDecoder  extends ByteToMessageDecoder{
 							//当报文是以0x16结尾的，读取报文体
 							in.resetReaderIndex();
 							content = readContent(in,contLength-2);
-							
-							//*********将获得的报文  写入到对象中,并传递到下一个handler
 							SocketData data = new SocketData(header, lenArea, content, end);
 							ChannelData channelData =  new ChannelData(data);
 							return channelData;
-							//**获取终端硬件ip对应的channel，并通过该channel 发送数据到终端
 							
 						}else{
-							//当报文不是0x16结尾  丢弃
 							break;
 						}
 					}else{
-						//不是完整帧
-						
 						in.readerIndex(beginReader);
 						break;
 					}
 				}else{
-					//当没有获取到帧头--0x68时  继续下一次获取,知道获取到帧头为止
 					if (in.readableBytes() <= 3) {
 						return null;
 					}
 					continue ;
 				}
-	 
-	
-					
-	
-				
 			}
 		}
 		return null;

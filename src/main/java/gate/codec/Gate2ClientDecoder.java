@@ -1,11 +1,14 @@
 package gate.codec;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 import gate.base.constant.ConstantValue;
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
+import gate.util.StringUtils;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 /**
@@ -41,9 +44,6 @@ public class Gate2ClientDecoder  extends ByteToMessageDecoder{
 					header = in.readByte();
 					if ( (header&0xFF) == ConstantValue.HEAD_DATA) {
 						//当获取到帧头--0x68时
-						
-						//读取长度域等.......
-						//读取长度域
 						int contLength = readLenArea(in,lenArea);
 						if( (contLength > 2 ) && (in.readableBytes() > contLength-2)){//首先 长度必须大于长度域本身占的2个字节
 							
@@ -54,8 +54,10 @@ public class Gate2ClientDecoder  extends ByteToMessageDecoder{
 								//当报文是以0x16结尾的，读取报文体
 								in.resetReaderIndex();
 								content = readContent(in,contLength-2);
-								
-								String clientIpAddress = ctx.channel().remoteAddress().toString().replaceAll("\\/", "");
+								Channel channel = ctx.channel();
+								InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+								String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+								String clientIpAddress = ipAddress;
 								SocketData data = new SocketData(header, lenArea, content, end);
 								ChannelData channelData =  new ChannelData(clientIpAddress, data);
 								out.add(channelData);
@@ -70,10 +72,7 @@ public class Gate2ClientDecoder  extends ByteToMessageDecoder{
 							in.readerIndex(beginReader);
 							break;
 						}
-						
-						
 					}else{
-						//当没有获取到帧头--0x68时  继续下一次获取
 						if (in.readableBytes() <= 3) {
 							return;
 						}

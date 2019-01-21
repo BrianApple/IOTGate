@@ -1,5 +1,7 @@
 package gate.client.handler;
 
+import java.net.InetSocketAddress;
+
 import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
@@ -16,14 +18,11 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 		String str=  StringUtils.encodeHex(msg.getSocketData().getLenArea())+StringUtils.encodeHex(msg.getSocketData().getContent());
 		
 		
-		Channel channel = ClientChannelCache.get(msg.getIpAddress());//127:0:0:1:56445
-//		System.out.println("下行时得到终端ip=="+msg.getIpAddress());
+		Channel channel = ClientChannelCache.get(msg.getIpAddress());
 		if(channel != null){
 			channel.writeAndFlush(msg);
-			System.out.println("Gate Down = 68"+str+"16");//3000010523605413040000A4D781008007E20802050F250D000D07E20802050F250D000D07E20802050F250D000D56F1
+			System.out.println("Gate Down = 68"+str+"16");
 		}
-		
-		
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -31,9 +30,11 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 		/**
 		 * 一旦网关与前置 建立连接 将  该连接通道channel缓存起来，方便Server选择发送上行报文的前置
 		 */
-		String masterIP = ctx.channel().remoteAddress().toString().replaceAll("\\/", "");
+		Channel channel = ctx.channel();
+		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String masterIP = ipAddress;
 		CacheQueue.masterChannelCache.put(masterIP, ctx.channel());
-		
 	}
 
 	@Override
@@ -42,8 +43,10 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 		/**
 		 * 当网关与前置断开连接 则从缓存中删除对应的channel 以便选择存活的channel发送报文到前置
 		 */
-		String masterIP = ctx.channel().remoteAddress().toString().replaceAll("\\/", "");;
-		
+		Channel channel = ctx.channel();
+		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String masterIP = ipAddress;
 		CacheQueue.masterChannelCache.remove(masterIP);
 		
 	}

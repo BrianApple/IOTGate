@@ -25,6 +25,4 @@ public class Gate2ClientEncoder extends MessageToByteEncoder<ChannelData>{
 		buf.writeByte(data.getEnd());
 		out.writeBytes(buf);
 	}
-
-
 }
