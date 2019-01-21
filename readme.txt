@@ -97,9 +97,9 @@ new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024)
  		A8					---  1byte  报文头
  		len				    ---  2byte  长度域：真实报文长度，包含“68”，“16”
  		type				---  1byte  报头类型
- 		protocolType		---  1byte  协议类型
+ 		protocolType		---  1byte  协议类型（左侧起第一个bit为0 表示IPV4, 1表示IPV6  剩余7个bit表示规约类型编号）
  		gateNum				---  1byte  网关编号
- 		00*12				---  12byte 00占一个字节，一共12个字节，固定结构
+ 		00*12				---  12byte 如果ip格式为IPV4，则当前为12字节0，反之，当前得12个byte+后续得4byte存放IPV6的值，存放顺序从左至右依次
  		clientIP			---  4byte  终端的IP地址，ip地址的每个段位占一个字节（不含符号和端口号）
  		port				---  2byte  终端对应的端口号
  		count				---  4byte  终端与网关建立连接时对应的连接序号（1-10000循环）
