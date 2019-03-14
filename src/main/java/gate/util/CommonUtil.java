@@ -59,7 +59,11 @@ public class CommonUtil {
         /**
          * 如果未启用zookeeper集群的话则手动传入master地址
          */
-        opt = new Option("m", true, "master addr:port, eg 127.0.0.1:8888");
+        opt = new Option("m", true, "master addr, eg 127.0.0.1,127.0.0.1");
+        opt.setRequired(false);
+        options.addOption(opt);
+        
+        opt = new Option("h", false, "help info");
         opt.setRequired(false);
         options.addOption(opt);
         
@@ -83,7 +87,7 @@ public class CommonUtil {
 	            commandLine = parser.parse(options, args);
 	            if (commandLine.hasOption('h')) {
 	                hf.printHelp(appName, options, true);
-	                System.out.println("-h参数以及成功被捕获---BRIAN");
+	                System.out.println("-h参数以及成功被捕获");
 	                return null;
 	            }
 	        }

@@ -1,12 +1,21 @@
 package gate.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
+
 import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.client.Client2Master;
+import gate.cluster.ZKFramework;
 import gate.codec.Gate2ClientDecoder;
 import gate.codec.Gate2ClientEncoder;
 import gate.server.handler.SocketInHandler;
@@ -80,40 +89,81 @@ public class Server4Terminal {
 	
 	
 	
-	
+	public static CommandLine commandLine = null;
+	public static int gatePort = 9811;
+	public static String zkAddr = null;
+	public static List<String> masterAddrs = new ArrayList<>(0);
+	public static CountDownLatch locks = new CountDownLatch(1);
 	public static void main(String[] args) {
-		//网关编号
-		CommonUtil.gateNum = 1;
-		//启动中间线程
+		suitCommonLine(args);
 		initEnvriment();
-		//添加JVM钩子
 		addHook();
-		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");//避免CPU使用率达到100%
-		//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动
+		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");
+		try {
+			locks.await();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
 		new Thread(new Runnable() {
 			
 			public void run() {
 				// TODO Auto-generated method stub
-				System.out.println("启动与终端对接的服务端.............");
-				bindAddress(config(),9811);
+				System.out.println(String.format("网关开始提供终端连接服务，端口号为：%s", gatePort));
+				bindAddress(config(),gatePort);
 			}
-		}).start();
+		},"gateS2tmnlThread").start();
 		//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
-		new Thread(new Runnable() {
-			
-			public void run() {
-				try {
-					System.out.println("启动与前置对接的客户端.............");
-					Client2Master.bindAddress2Client(Client2Master.configClient(),"127.0.0.1",8888);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		
+		for (String masterAddr : masterAddrs) {
+			new Thread(new Runnable() {
 				
-			}
-		}).start();
+				public void run() {
+					try {
+						System.out.println(String.format("连接前置服务%s成功,前置端口必须为8888", masterAddr));
+						Client2Master.bindAddress2Client(Client2Master.configClient(),masterAddr,8888);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			},"gate2masterThread").start();
+		}
+		
 		
 		
 
+	}
+	/**
+	 * 命令行
+	 */
+	public static void suitCommonLine(String[] args){
+		commandLine =
+				 CommonUtil.parseCmdLine("iotGateServer", args, CommonUtil.buildCommandlineOptions(new Options()),
+                    new PosixParser());
+        if (null == commandLine) {
+            System.exit(-1);
+        }
+		
+        if(commandLine.hasOption("c") && commandLine.hasOption("z")){
+       	 
+        	zkAddr = commandLine.getOptionValue("z");
+        	new ZKFramework().start(zkAddr);
+        }else if (commandLine.hasOption("m")) {
+        	String[] vals =  commandLine.getOptionValue("m").split("\\,");
+        	for (String string : vals) {
+        		masterAddrs.add(string);
+			}
+       	 
+        }else{
+        	System.err.println("启动参数有误，请重新启动");
+        	System.exit(-1);
+        }
+        
+        CommonUtil.gateNum = Integer.parseInt(commandLine.getOptionValue("n"));
+        System.out.println(String.format("网关编号为：%s", CommonUtil.gateNum));
+        if(commandLine.hasOption("p")){
+        	gatePort = Integer.parseInt(commandLine.getOptionValue("p"));
+   	 	}
 	}
 	/**
 	 * 环境初始化  ---目前最还先不用spring管理
