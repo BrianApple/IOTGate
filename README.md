@@ -11,9 +11,9 @@ new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024)
 
 ***
 ### 入口类:
-
 	Server4Terminal.java
-
+### API地址
+	https://apidoc.gitee.com/willbeahero/IOTGate
 ### 命令行参数说明
 
 |      参数      | 是否必选 |是否含参| 含义 |
