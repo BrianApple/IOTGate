@@ -1,12 +1,11 @@
 package gate.base.chachequeue;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
+
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import gate.base.domain.ChannelData;
-import gate.base.domain.SocketData;
 import io.netty.channel.Channel;
 /**
  * 数据流转容器
@@ -14,7 +13,7 @@ import io.netty.channel.Channel;
  *
  */
 public class CacheQueue {
-	
+	static volatile int index = 0; // 索引:指定起始位置
 	/**
 	 * 记录集中器对应的连接次数
 	 */
@@ -23,7 +22,12 @@ public class CacheQueue {
 	 * 缓存前置channel
 	 * 网关连接到前置之后 将对应的channel缓存起来 通过ip获取
 	 */
-	public static ConcurrentHashMap<String, Channel> masterChannelCache ;
+	private static ConcurrentHashMap<String, Channel> masterChannelCache ;
+	/**
+	 * 轮询策略
+	 */
+	private static CopyOnWriteArrayList<Channel> roundCache ;
+	
 	/**
 	 * Server4Terminel接收到消息之后 将消息存放到up2MasterQueue队列中
 	 */
@@ -33,6 +37,7 @@ public class CacheQueue {
 		
 		ipCountRelationCache = new ConcurrentHashMap<String, Integer>();
 		masterChannelCache = new ConcurrentHashMap<String, Channel>();
+		roundCache = new CopyOnWriteArrayList<Channel>();
 		up2MasterQueue = new LinkedBlockingQueue<ChannelData>();
 		System.out.println("GATE 初始化CacheQueue完成......");
 		
@@ -45,15 +50,12 @@ public class CacheQueue {
 	 * @return
 	 */
 	public static Channel choiceMasterChannel(){
-		//后续可以考虑轮寻策略
-		//目前只考虑连接一个前置
-		if(!CacheQueue.masterChannelCache.isEmpty()){
-			Iterator<Entry<String, Channel>> it=CacheQueue.masterChannelCache.entrySet().iterator();
-			if(it.hasNext()){
-				Entry<String, Channel> entry = it.next();
-				String masterIp = entry.getKey();
-				return entry.getValue();
-			}
+		//TODO 轮寻策略
+		int masterNum = CacheQueue.masterChannelCache.size();
+		if(masterNum > 0){
+			int nextIndex = (index + 1) % masterNum;
+			index = nextIndex;
+			return roundCache.get(nextIndex);
 		}
 		return null;
 	}
@@ -64,9 +66,20 @@ public class CacheQueue {
 		ipCountRelationCache.clear();
 	}
 	/**
-	 * 清空 前置连接缓存
+	 * 清空 前置连接以及前置会话策略缓存
 	 */
 	public static void clearMasterChannelCache(){
 		masterChannelCache.clear();
+		roundCache.clear();
+	}
+	
+	public static void addMasterChannel2LocalCache(String key ,Channel channel ){
+		masterChannelCache.put(key, channel);
+		roundCache.add(channel);
+		
+	}
+	public static void removeMasterChannelFromLocalCache(String key ){
+		Channel removedChannel = masterChannelCache.remove(key);
+		roundCache.remove(removedChannel);
 	}
 }

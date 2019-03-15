@@ -34,12 +34,13 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
 		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
 		String masterIP = ipAddress;
-		CacheQueue.masterChannelCache.put(masterIP, ctx.channel());
+		CacheQueue.addMasterChannel2LocalCache(masterIP, ctx.channel());
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
+		
 		/**
 		 * 当网关与前置断开连接 则从缓存中删除对应的channel 以便选择存活的channel发送报文到前置
 		 */
@@ -47,7 +48,7 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
 		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
 		String masterIP = ipAddress;
-		CacheQueue.masterChannelCache.remove(masterIP);
+		CacheQueue.removeMasterChannelFromLocalCache(masterIP);
 		
 	}
 
