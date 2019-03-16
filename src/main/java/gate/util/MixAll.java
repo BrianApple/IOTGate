@@ -37,6 +37,10 @@ public class MixAll {
 
         return inetAddressList;
     }
+	/**
+	 * 获取程序进程号
+	 * @return
+	 */
 	public static long getPID() {
 	    String processName = java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
 	    if (processName != null && processName.length() > 0) {
@@ -51,7 +55,7 @@ public class MixAll {
 	    return 0;
 	}
 	/**
-	 * 获取本机的ip
+	 * 获取本机的ip--linux平台上获取的ip会存在问题，拿到的是127.0.0.1
 	 * @return
 	 */
 	public static String localhostName() {
