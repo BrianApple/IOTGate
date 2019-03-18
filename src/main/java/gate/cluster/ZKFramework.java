@@ -23,6 +23,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
+import gate.Entrance;
 import gate.base.domain.LocalCache;
 import gate.concurrent.BasicThreadPoolTaskExecutor;
 import gate.concurrent.ThreadFactoryImpl;
@@ -94,9 +95,9 @@ public class ZKFramework {
 					System.out.println("CHILD_ADDED :" + event.getData().getPath());
 					try {
 						String val = new String(event.getData().getData());
-						Server4Terminal.masterAddrs.add(val);
+						Entrance.masterAddrs.add(val);
 						addNode2Cache(val);
-						Server4Terminal.locks.countDown();
+						Entrance.locks.countDown();
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
