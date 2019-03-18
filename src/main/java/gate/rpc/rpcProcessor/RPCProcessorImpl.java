@@ -1,5 +1,7 @@
 package gate.rpc.rpcProcessor;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import gate.base.cache.RPCCache;
@@ -26,7 +28,24 @@ public class RPCProcessorImpl implements RPCProcessor {
 
 	@Override
 	public ResponseData executeService(RequestData requestData) {
-		// TODO Auto-generated method stub
+		Class<?> clazz = RPCCache.getClass(requestData.getClassName());
+		try {
+			Method method = clazz.getMethod(requestData.getMethodName(), requestData.getParamTyps());
+			ResponseData responseData = (ResponseData) method.invoke(clazz, requestData.getArgs());
+			return responseData;
+		} catch (NoSuchMethodException | SecurityException e) {
+			
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			
+			e.printStackTrace();
+		}
 		return null;
 	}
 	

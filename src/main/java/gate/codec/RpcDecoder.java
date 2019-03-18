@@ -38,8 +38,7 @@ public class RpcDecoder extends LengthFieldBasedFrameDecoder{
 		byte[] contentData = new byte[dataLen];
         byteBuffer.get(contentData);//报头数据
         RequestData requestData = MixAll.decode(contentData, RequestData.class);
-        processor.executeService(requestData);
-		return null;
+        return processor.executeService(requestData);
 	}
 
 	

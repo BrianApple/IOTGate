@@ -13,8 +13,8 @@ public class RequestData implements Serializable{
 	
 	private String className;
 	private String methodName;
-	private List<Class<?>> paramTyps;
-	private List<Object> args;
+	private Class<?>[] paramTyps;
+	private Object[] args;
 	
 	public String getClassName() {
 		return className;
@@ -28,18 +28,22 @@ public class RequestData implements Serializable{
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
-	public List<Class<?>> getParamTyps() {
+	public Class<?>[] getParamTyps() {
 		return paramTyps;
 	}
-	public void setParamTyps(List<Class<?>> paramTyps) {
+	public void setParamTyps(Class<?>[] paramTyps) {
 		this.paramTyps = paramTyps;
 	}
-	public List<Object> getArgs() {
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	public Object[] getArgs() {
 		return args;
 	}
-	public void setArgs(List<Object> args) {
+	public void setArgs(Object[] args) {
 		this.args = args;
 	}
+	
 	
 	
 	
