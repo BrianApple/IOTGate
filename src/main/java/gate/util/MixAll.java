@@ -1,16 +1,25 @@
 package gate.util;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
 public class MixAll {
+	private static final String CLASS_SUFFIX = ".class";
+	
+	private static final String CLASS_FILE_PREFIX = File.separator + "classes"  + File.separator;
+	
+	private static final String PACKAGE_SEPARATOR = ".";
+	
 	private MixAll(){
 		throw new AssertionError();
 	}
@@ -116,6 +125,158 @@ public class MixAll {
 			}
 		}
 		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 获取指定包下所有的class名称
+	 * reference from  https://blog.csdn.net/cckevincyh/article/details/81176155
+	 * @param packageName
+	 * @param showChildPackageFlag
+	 * @return
+	 */
+	public static List<String> getClazzName(String packageName, boolean showChildPackageFlag ) {
+
+	    List<String> result = new ArrayList<>();
+
+	    String suffixPath = packageName.replaceAll("\\.", "\\/");
+
+	    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+	    try {
+
+	        Enumeration<URL> urls = loader.getResources(suffixPath);
+
+	        while(urls.hasMoreElements()) {
+
+	            URL url = urls.nextElement();
+
+	            if(url != null) {
+
+	                String protocol = url.getProtocol();
+
+	                if("file".equals(protocol)) {
+
+	                    String path = url.getPath();
+
+	                    System.out.println(path);
+
+	                    result.addAll(getAllClassNameByFile(new File(path), showChildPackageFlag));
+
+	                }
+
+	            }
+
+	        }
+
+	    } catch (IOException e) {
+
+	        e.printStackTrace();
+
+	    }
+
+	    
+	    return result;
+
+	}
+	
+
+	/**
+	 * 递归获取所有class文件的名字
+	 * @param file 
+	 * @param flag  是否需要迭代遍历
+	 * @return List
+	 */
+	private static List<String> getAllClassNameByFile(File file, boolean flag) {
+
+	    List<String> result =  new ArrayList<>();
+
+	    if(!file.exists()) {
+
+	        return result;
+
+	    }
+
+	    if(file.isFile()) {
+
+	        String path = file.getPath();
+
+	        if(path.endsWith(CLASS_SUFFIX)) {
+
+	            path = path.replace(CLASS_SUFFIX, "");
+
+	            String clazzName = path.substring(path.indexOf(CLASS_FILE_PREFIX) + CLASS_FILE_PREFIX.length())
+
+	                    .replace(File.separator, PACKAGE_SEPARATOR);
+
+	            if(-1 == clazzName.indexOf("$")) {
+
+	                result.add(clazzName);
+
+	            }
+
+	        }
+
+	        return result;
+
+	        
+
+	    } else {
+
+	        File[] listFiles = file.listFiles();
+
+	        if(listFiles != null && listFiles.length > 0) {
+
+	            for (File f : listFiles) {
+
+	                if(flag) {
+
+	                    result.addAll(getAllClassNameByFile(f, flag));
+
+	                } else {
+
+	                    if(f.isFile()){
+
+	                        String path = f.getPath();
+
+	                        if(path.endsWith(CLASS_SUFFIX)) {
+
+	                            path = path.replace(CLASS_SUFFIX, "");
+
+	                            // 从"/classes/"后面开始截取
+
+	                            String clazzName = path.substring(path.indexOf(CLASS_FILE_PREFIX) + CLASS_FILE_PREFIX.length())
+
+	                                    .replace(File.separator, PACKAGE_SEPARATOR);
+
+	                            if(-1 == clazzName.indexOf("$")) {
+
+	                                result.add(clazzName);
+
+	                            }
+
+	                        }
+
+	                    }
+
+	                }
+
+	            }
+
+	        } 
+
+	        return result;
+
+	    }
+
 	}
 	
 }

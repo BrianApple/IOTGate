@@ -18,6 +18,8 @@ import gate.client.Client2Master;
 import gate.cluster.ZKFramework;
 import gate.codec.Gate2ClientDecoder;
 import gate.codec.Gate2ClientEncoder;
+import gate.rpc.rpcProcessor.RPCProcessor;
+import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import gate.server.handler.SocketInHandler;
 import gate.threadWorkers.TServer2MClient;
 import gate.util.CommonUtil;
@@ -94,6 +96,7 @@ public class Server4Terminal {
 	public static String zkAddr = null;
 	public static List<String> masterAddrs = new ArrayList<>(1);
 	public static CountDownLatch locks = new CountDownLatch(1);
+	private static RPCProcessor processor = new RPCProcessorImpl();
 	public static void main(String[] args) {
 		boolean isCluster = suitCommonLine(args);
 		initEnvriment();
@@ -131,6 +134,11 @@ public class Server4Terminal {
 			},"gate2masterThread").start();
 		}
 		
+		try {
+			processor.exportService();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		
 

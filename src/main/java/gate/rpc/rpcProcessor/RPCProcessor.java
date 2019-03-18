@@ -1,4 +1,4 @@
-package gate.rpc;
+package gate.rpc.rpcProcessor;
 
 import gate.rpc.dataBridge.RequestData;
 import gate.rpc.dataBridge.ResponseData;
@@ -9,9 +9,17 @@ import gate.rpc.dataBridge.ResponseData;
  * @author  yangcheng
  * @date:   2019年3月17日
  */
-public interface RPCService {
-
-	void exportService ();
+public interface RPCProcessor {
+	/**
+	 * 发布rpc服务
+	 * @throws Exception
+	 */
+	void exportService() throws Exception ;
 	
+	/**
+	 * 调用rpc服务
+	 * @param requestData
+	 * @return
+	 */
 	ResponseData executeService(RequestData requestData);
 }
