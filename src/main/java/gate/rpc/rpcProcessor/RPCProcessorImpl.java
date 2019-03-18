@@ -14,12 +14,12 @@ public class RPCProcessorImpl implements RPCProcessor {
 	public void exportService() throws Exception {
 		List<String> result = MixAll.getClazzName("gate.rpc.rpcService",false);
 		for (String className : result) {
-			Class clazz = Class.forName(className);
+			Class<?> clazz = Class.forName(className);
 			if(clazz.isAnnotationPresent(RPCService.class)){
 				RPCCache.putClass(className, clazz);
 			}
 		}
-		
+		System.out.println("发布rpc服务完毕........");
 		
 		
 	}
@@ -32,8 +32,6 @@ public class RPCProcessorImpl implements RPCProcessor {
 	
 	
 	
-	public static void main(String[] args) {
-		MixAll.getClazzName("gate.rpc.rpcService",false);
-	}
+	
 
 }

@@ -34,9 +34,9 @@ public class Entrance {
 	public static CountDownLatch locks = new CountDownLatch(1);
 	private static RPCProcessor processor = new RPCProcessorImpl();
 	public static void main(String[] args) {
+		
 		boolean isCluster = suitCommonLine(args);
 		initEnvriment();
-		addHook();
 		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");
 		if(isCluster){
 			try {
@@ -75,6 +75,7 @@ public class Entrance {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		addHook();
 	}
 	
 	

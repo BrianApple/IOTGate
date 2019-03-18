@@ -9,9 +9,12 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+
+import com.alibaba.fastjson.JSON;
 
 public class MixAll {
 	private static final String CLASS_SUFFIX = ".class";
@@ -278,5 +281,28 @@ public class MixAll {
 	    }
 
 	}
+	/**
+	 * 反序列化指定对象
+	 * @param data
+	 * @param classOfT
+	 * @return
+	 */
+	public static <T> T decode(final byte[] data, Class<T> classOfT) {
+        final String json = new String(data, Charset.forName("UTF-8"));
+        return JSON.parseObject(json, classOfT);
+    }
+	
+	/**
+	 * 序列化指定对象
+	 * @param obj
+	 * @return
+	 */
+	public static byte[] encode(final Object obj) {
+        final String json = JSON.toJSONString(obj, false);;
+        if (json != null) {
+            return json.getBytes(Charset.forName("UTF-8"));
+        }
+        return null;
+    }
 	
 }
