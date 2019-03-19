@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import gate.base.cache.RPCCache;
+import gate.remoting.RemoteServer;
 import gate.rpc.annotation.RPCService;
 import gate.rpc.dataBridge.RequestData;
 import gate.rpc.dataBridge.ResponseData;
@@ -21,9 +22,8 @@ public class RPCProcessorImpl implements RPCProcessor {
 				RPCCache.putClass(className, clazz);
 			}
 		}
+		new RemoteServer().start();
 		System.out.println("发布rpc服务完毕........");
-		
-		
 	}
 
 	@Override

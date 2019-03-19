@@ -18,10 +18,9 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  */
 public class RpcDecoder extends LengthFieldBasedFrameDecoder{
 
-	RPCProcessor processor = new RPCProcessorImpl();
 	
-	public RpcDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength, int lengthAdjustment,
-			int initialBytesToStrip) {
+	
+	public RpcDecoder() {
 		super(10240, 0, 2, 0, 0);
 	}
 
@@ -38,7 +37,7 @@ public class RpcDecoder extends LengthFieldBasedFrameDecoder{
 		byte[] contentData = new byte[dataLen];
         byteBuffer.get(contentData);//报头数据
         RequestData requestData = MixAll.decode(contentData, RequestData.class);
-        return processor.executeService(requestData);
+        return requestData;
 	}
 
 	
