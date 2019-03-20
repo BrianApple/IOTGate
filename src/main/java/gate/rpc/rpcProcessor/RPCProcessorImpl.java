@@ -19,7 +19,7 @@ public class RPCProcessorImpl implements RPCProcessor {
 		for (String className : result) {
 			Class<?> clazz = Class.forName(className);
 			if(clazz.isAnnotationPresent(RPCService.class)){
-				RPCCache.putClass(className, clazz);
+				RPCCache.putClass(clazz.getSimpleName(), clazz);
 			}
 		}
 		new RemoteServer().start();
@@ -28,10 +28,13 @@ public class RPCProcessorImpl implements RPCProcessor {
 
 	@Override
 	public ResponseData executeService(RequestData requestData) {
-		Class<?> clazz = RPCCache.getClass(requestData.getClassName());
+		Class<?> clazz = RPCCache.getClass(requestData.getClassName()+"Impl");
+		ResponseData responseData = null;
 		try {
 			Method method = clazz.getMethod(requestData.getMethodName(), requestData.getParamTyps());
-			ResponseData responseData = (ResponseData) method.invoke(clazz, requestData.getArgs());
+			responseData = (ResponseData) method.invoke(clazz.newInstance(), requestData.getArgs());
+			//请求响应代码一一对应
+			responseData.setResponseNum(requestData.getRequestNum());
 			return responseData;
 		} catch (NoSuchMethodException | SecurityException e) {
 			
@@ -45,7 +48,11 @@ public class RPCProcessorImpl implements RPCProcessor {
 		} catch (InvocationTargetException e) {
 			
 			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
 		}
+		responseData = new ResponseData();
+		responseData.setResponseNum(requestData.getRequestNum());
 		return null;
 	}
 	

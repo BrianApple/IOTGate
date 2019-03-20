@@ -15,6 +15,9 @@ import java.util.Enumeration;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.util.DeserializeBeanInfo;
 
 public class MixAll {
 	private static final String CLASS_SUFFIX = ".class";
@@ -286,10 +289,25 @@ public class MixAll {
 	 * @param data
 	 * @param classOfT
 	 * @return
+	 * 
+	 * {
+	 * "args":["你好rpc"],
+	 * "className":"IOTGateConsole.rpc.service.RPCExportService",
+	 * "methodName":"test",
+	 * "paramTyps":["java.lang.String"],
+	 * "requestNum":"540bbd93-06a6-4b77-a067-fbd8d0d38f2d"
+	 * }
 	 */
 	public static <T> T decode(final byte[] data, Class<T> classOfT) {
         final String json = new String(data, Charset.forName("UTF-8"));
-        return JSON.parseObject(json, classOfT);
+        try {
+        	 T  t= JSON.parseObject(json, classOfT);
+        	 return t;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+        return null;
     }
 	
 	/**
@@ -304,5 +322,8 @@ public class MixAll {
         }
         return null;
     }
+	
+	
+	
 	
 }

@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class ResponseData implements Serializable{
 	private static final long serialVersionUID = 1341548752135718024L;
+	private String responseNum;
 	/**
 	 * 返回状态码
 	 * 200 成功
@@ -41,6 +42,14 @@ public class ResponseData implements Serializable{
 
 	public void setErroInfo(Throwable erroInfo) {
 		this.erroInfo = erroInfo;
+	}
+
+	public String getResponseNum() {
+		return responseNum;
+	}
+
+	public void setResponseNum(String responseNum) {
+		this.responseNum = responseNum;
 	}
 	
 }

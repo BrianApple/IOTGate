@@ -2,6 +2,7 @@ package gate.codec;
 
 import gate.rpc.dataBridge.ResponseData;
 import gate.util.MixAll;
+import gate.util.SerializationUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -15,7 +16,7 @@ public class RpcEncoder extends MessageToByteEncoder<ResponseData> {
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, ResponseData msg, ByteBuf out) throws Exception {
-		byte[] data = MixAll.encode(msg);
+		byte[] data = SerializationUtil.serialize(msg);
 		out.writeShort(data.length);
 		out.writeBytes(data);
 	}

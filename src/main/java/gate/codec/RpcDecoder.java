@@ -7,6 +7,7 @@ import gate.rpc.dataBridge.RequestData;
 import gate.rpc.rpcProcessor.RPCProcessor;
 import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import gate.util.MixAll;
+import gate.util.SerializationUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -33,10 +34,10 @@ public class RpcDecoder extends LengthFieldBasedFrameDecoder{
 		ByteBuffer byteBuffer = buff.nioBuffer();
 		int dataAllLen = byteBuffer.limit();
 		int lenArea = byteBuffer.getShort();
-		int dataLen = dataAllLen - lenArea;
+		int dataLen = dataAllLen - 2;
 		byte[] contentData = new byte[dataLen];
         byteBuffer.get(contentData);//报头数据
-        RequestData requestData = MixAll.decode(contentData, RequestData.class);
+        RequestData requestData = SerializationUtil.deserialize(contentData, RequestData.class);
         return requestData;
 	}
 

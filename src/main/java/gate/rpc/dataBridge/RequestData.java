@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class RequestData implements Serializable{
 	private static final long serialVersionUID = -497072374733332517L;
-	
+	private String requestNum;
 	private String className;
 	private String methodName;
 	private Class<?>[] paramTyps;
@@ -42,6 +42,12 @@ public class RequestData implements Serializable{
 	}
 	public void setArgs(Object[] args) {
 		this.args = args;
+	}
+	public String getRequestNum() {
+		return requestNum;
+	}
+	public void setRequestNum(String requestNum) {
+		this.requestNum = requestNum;
 	}
 	
 	

@@ -6,6 +6,7 @@ import gate.codec.RpcDecoder;
 import gate.codec.RpcEncoder;
 import gate.concurrent.ThreadFactoryImpl;
 import gate.rpc.dataBridge.RequestData;
+import gate.rpc.dataBridge.ResponseData;
 import gate.rpc.rpcProcessor.RPCProcessor;
 import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import io.netty.bootstrap.ServerBootstrap;
@@ -127,7 +128,8 @@ public class RemoteServer {
         	/**
         	 * 调用本地方法
         	 */
-        	processor.executeService(msg);
+        	ResponseData rsp = processor.executeService(msg);
+        	ctx.channel().writeAndFlush(rsp);
         }
     }
 	
