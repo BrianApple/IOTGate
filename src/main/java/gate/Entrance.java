@@ -1,5 +1,13 @@
 package gate;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -33,11 +41,12 @@ public class Entrance {
 	public static List<String> masterAddrs = new ArrayList<>(1);
 	public static CountDownLatch locks = new CountDownLatch(1);
 	private static RPCProcessor processor = new RPCProcessorImpl();
+	private static String[] protocolType;
 	public static void main(String[] args) {
 		
 		boolean isCluster = suitCommonLine(args);
-		initEnvriment();
 		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");
+		initEnvriment();
 		if(isCluster){
 			try {
 				locks.await();
@@ -45,35 +54,53 @@ public class Entrance {
 				e1.printStackTrace();
 			}
 		}
-		//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
-		new Thread(new Runnable() {
-			
-			public void run() {
-				// TODO Auto-generated method stub
-				System.out.println(String.format("网关开始提供终端连接服务，端口号为：%s", gatePort));
-				Server4Terminal.bindAddress(Server4Terminal.config(),gatePort);
-			}
-		},"gateS2tmnlThread").start();
+		
+		/**
+		 * 后面这部分有点low  将就一下吧，启动过程无所谓了.....O(∩_∩)O哈哈~
+		 */
+		
+		for(int i = 0 ; i < protocolType.length ; i++){
+			//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
+			String pts =  protocolType[i];
+			new Thread(new Runnable() {
+				public void run() {
+					// TODO Auto-generated method stub
+					
+					String[] pt = pts.split("\\,");
+					boolean isBigEndian = "0".equals(pt[1]) ? false : true;
+					boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[5]) ? false : true;
+					System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s", Integer.parseInt(pt[0]),Integer.parseInt(pt[7])));
+					Server4Terminal.bindAddress(Server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
+							Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6])),Integer.parseInt(pt[7]));//1, false, -1, 1, 2, true, 1
+					
+				}
+			},"gate2tmnlThread_"+i).start();
+		}		
+		
+		
+		
 		//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
 		
-		for (String masterAddr : masterAddrs) {
+		for(int i = 0 ; i < masterAddrs.size() ; i++){
+			String addr = masterAddrs.get(i);
 			new Thread(new Runnable() {
-				
 				public void run() {
 					try {
-						Client2Master.bindAddress2Client(Client2Master.configClient(),masterAddr,8888);
-						System.out.println(String.format("连接前置服务%s成功,前置端口必须为8888", masterAddr));
+						System.out.println(String.format("！！！前置服务%s连接成功,前置端口必须为8888", addr));
+						Client2Master.bindAddress2Client(Client2Master.configClient(),addr,8888);
+						
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-			},"gate2masterThread").start();
+			},"gate2masterThread_"+i).start();
 		}
 		
 		try {
 			processor.exportService();
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println("rpc服务发布失败...............");
 		}
 		addHook();
 	}
@@ -100,11 +127,12 @@ public class Entrance {
         	for (String string : vals) {
         		masterAddrs.add(string);
 			}
-       	 
         }else{
         	System.err.println("启动参数有误，请重新启动");
         	System.exit(-1);
         }
+        String confFile = commandLine.getOptionValue("f");
+        protocolType = getProtocolType(confFile);
         
         CommonUtil.gateNum = Integer.parseInt(commandLine.getOptionValue("n"));
         System.out.println(String.format("网关编号为：%s", CommonUtil.gateNum));
@@ -139,4 +167,34 @@ public class Entrance {
 		}));
 	}
 
+	
+	@SuppressWarnings("resource")
+	public static String[] getProtocolType(String filePath){
+		BufferedReader bufferedReader =null;
+        try {
+        	bufferedReader = new BufferedReader(new FileReader(new File(filePath)));
+        	String str;
+        	while((str = bufferedReader.readLine()) != null){
+        		if(str.startsWith("protocolType")){
+        			return str.split("\\=")[1].split(";");
+        		}
+            }
+        	
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.err.println("配置文件加载失败");
+        	System.exit(-1);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try {
+				bufferedReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+        return null;
+        
+	}
 }

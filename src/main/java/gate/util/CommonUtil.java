@@ -72,9 +72,9 @@ public class CommonUtil {
         opt.setRequired(true);
         options.addOption(opt);
 		
-		opt = new Option("p", true, "gate port ,defualt 9811");
-        opt.setRequired(false);
-        options.addOption(opt);
+//		opt = new Option("p", true, "gate port ,defualt 9811");
+//        opt.setRequired(false);
+//        options.addOption(opt);
         
         
 		
@@ -91,6 +91,10 @@ public class CommonUtil {
          */
         opt = new Option("m", true, "master addr, eg 127.0.0.1,127.0.0.1");
         opt.setRequired(false);
+        options.addOption(opt);
+        
+        opt = new Option("f", true, "cache file url: eg win:'D:\\iotGate.conf'  ; linux: '/gate/iotGate.conf'");
+        opt.setRequired(true);
         options.addOption(opt);
         
         opt = new Option("h", false, "help info");

@@ -1,6 +1,7 @@
 package test.moniMaster;
 
 
+import gate.base.domain.ChannelData;
 import gate.util.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -26,7 +27,8 @@ public class moniMasterHandler extends ChannelInboundHandlerAdapter {
 	 */
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try{
-			ByteBuf recieveMsg=(ByteBuf) msg;
+			ChannelData data=(ChannelData)msg;
+			ByteBuf recieveMsg=	data.getSocketData().getByteBuf();
 			String code = ByteBufUtil.hexDump(recieveMsg).toUpperCase();//将bytebuf中的可读字节 转换成16进制数字符串
 			int pos = CountHelper.masterRecieveCount.addAndGet(1);
 			if(pos == 1 ){

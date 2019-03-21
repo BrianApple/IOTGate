@@ -25,7 +25,7 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 			byte[] car =  new byte[len];
 			msg.getSocketData().getByteBuf().readBytes(car);
 			msg.getSocketData().getByteBuf().readerIndex(0);
-//			System.out.println("Gate Down = "+StringUtils.encodeHex(car));
+			System.out.println("Gate Down = "+StringUtils.encodeHex(car));
 			channel.writeAndFlush(msg);
 			
 		}

@@ -4,7 +4,6 @@ package gate.codec;
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 /**

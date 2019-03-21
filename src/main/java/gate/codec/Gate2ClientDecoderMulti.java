@@ -13,15 +13,15 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 /**
- * 对规约
+ * 多规约解码器
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月20日
  */
 public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
-	private int pId;//规约类型
+	private int pId;//规约类型--[0,127]共128种规约
 	private boolean isBigEndian ;//大小端
-	private int beginHexVal;
+	private int beginHexVal;//暂时传-1
 	private int lengthFieldOffset;
 	private int lengthFieldLength;//值为Data得长度
 	private boolean isDataLenthIncludeLenthFieldLenth ;//长度域长度值是否包含长度域本身长度
@@ -109,6 +109,7 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 						String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
 						String clientIpAddress = ipAddress;
 						SocketData data = new SocketData(byteBuf);
+						data.setpId(pId);
 						ChannelData channelData =  new ChannelData(clientIpAddress, data);
 						out.add(channelData);
 						break;
@@ -161,6 +162,7 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 						String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
 						String clientIpAddress = ipAddress;
 						SocketData data = new SocketData(byteBuf);
+						data.setpId(pId);
 						ChannelData channelData =  new ChannelData(clientIpAddress, data);
 						out.add(channelData);
 						break;

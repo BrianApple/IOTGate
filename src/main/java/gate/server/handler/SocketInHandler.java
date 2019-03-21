@@ -61,7 +61,7 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 			byte[] car =  new byte[len];
 			channelData.getSocketData().getByteBuf().readBytes(car);
 			channelData.getSocketData().getByteBuf().readerIndex(0);
-//			System.out.println("GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+			System.out.println("GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
 			
 		}finally{
 			ReferenceCountUtil.release(msg);

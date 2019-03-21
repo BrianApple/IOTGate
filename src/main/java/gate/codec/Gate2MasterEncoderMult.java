@@ -48,7 +48,7 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		headBuf.writeInt16(lenth);//整个真实报文长度
 		headBuf.writeInt8(Integer.valueOf(1).byteValue());//type
 		if(ipAddress.split("\\|")[0].contains(".")){
-			headBuf.writeInt8(Integer.valueOf(0).byteValue());//protocolType
+			headBuf.writeInt8((byte)data.getpId());//protocolType
 		}else{
 			headBuf.writeInt8(Integer.valueOf(0+(1<<7)).byteValue());//protocolType
 		}
@@ -73,20 +73,22 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port
 		headBuf.writeInt32(count);//count
 
-		ByteBuf outData = Unpooled.directBuffer();
+		ByteBuf outData = CommonUtil.getDirectByteBuf();
 		outData.writeBytes(headBuf.getDataBuffer());
 		//真实报文
 		outData.writeBytes(cliDataBuf);
 		//------------------------------------------
-//		byte[] car = new byte[outData.readableBytes()];
-//		for(int i = 0;i<outData.readableBytes() ; i++){
-//			car[i] = outData.getByte(i);
-//		}
-//		System.out.println("GATE UP = "+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));
-//		outData.readerIndex(0);
+		byte[] car = new byte[outData.readableBytes()];
+		for(int i = 0;i<outData.readableBytes() ; i++){
+			car[i] = outData.getByte(i);
+		}
+		System.out.println("GATE UP = "+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));
+		outData.readerIndex(0);
 		//--------------------------
 		out.writeBytes(outData);
+		
 		CommonUtil.releaseByteBuf(cliDataBuf);
+		CommonUtil.releaseByteBuf(outData);
 	}
 
 

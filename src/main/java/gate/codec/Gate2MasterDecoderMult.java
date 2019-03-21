@@ -112,64 +112,7 @@ public class Gate2MasterDecoderMult  extends ByteToMessageDecoder{
 		return null;
 	}
 	
-	public ChannelData decodeSocketData(ByteBuf in){
-		if(in.readableBytes()>3){
-			//报文头
-			 byte header;
-			//报文长度
-			 byte[] lenArea = new  byte[2];
-			//报文体
-			 byte[] content;
-			//结尾16
-			 byte end = 0x16;
-		
-			// 记录包头开始的index
-			int beginReader;
-				
-			while (true) {
-				// 获取包头开始的index
-				beginReader = in.readerIndex();
-				// 标记包头开始的index
-				in.markReaderIndex();
-				
-				
-				header = in.readByte();
-				if (header == ConstantValue.HEAD_DATA) {
-					//获取到帧头--0x68时
-					
-					//读取长度域 
-					int contLength = readLenArea(in,lenArea);
-					if( (contLength > 2 ) && (in.readableBytes() > contLength-2)){//首先 长度必须大于长度域本身占的2个字节
-						//完整帧
-						
-						in.markReaderIndex();
-						//获取帧尾 判断是否为0X16
-						in.skipBytes(contLength-2);//当前指针已经不包含长度域的2个字节了
-						if(isEnd(in)){
-							//当报文是以0x16结尾的，读取报文体
-							in.resetReaderIndex();
-							content = readContent(in,contLength-2);
-							SocketData data = new SocketData(header, lenArea, content, end);
-							ChannelData channelData =  new ChannelData(data);
-							return channelData;
-							
-						}else{
-							break;
-						}
-					}else{
-						in.readerIndex(beginReader);
-						break;
-					}
-				}else{
-					if (in.readableBytes() <= 3) {
-						return null;
-					}
-					continue ;
-				}
-			}
-		}
-		return null;
-	}
+	
 	/**
 	 * ByteBuf获取读指针后两个字节的数据，并计算对应长度值并返回---小端模式
 	 * @param in byteBuf
@@ -184,49 +127,6 @@ public class Gate2MasterDecoderMult  extends ByteToMessageDecoder{
 		int count = (left & 0xFF) + ((right & 0xFF) << 8 );
 		return count;
 	}
-	/**
-	 * 获取报文长度，并且获取报文长度大小的byte[]  正常获取返回长度int值
-	 * @param in byteBuf
-	 * @param lenArea 存储长度域2个字节的数据
-	 * @return
-	 */
-	public int readLenArea(ByteBuf in,byte[] lenArea){
-		
-		ByteBuf buf = in.readBytes(2);//两个字节的长度域
-//		lenArea = buf.array();//不能使用.array  因为默认是零拷贝
-		byte left = buf.readByte();
-		byte right = buf.readByte();
-		lenArea[0] = left;
-		lenArea[1] = right;
-		int count = (left & 0xFF) + ((right & 0xFF) << 8 );
-		return count;
-	}
-	/**
-	 * 获取报文的结束标识  正常获取返回结果
-	 * @param in byteBuf
-	 * @param len 读取区间
-	 * @return
-	 */
-	public byte[] readContent(ByteBuf in,int len){
-		byte[] bs = new byte[len];
-		if(in.readableBytes()>len){
-			
-			ByteBuf buf= in.readBytes(len);
-			buf.getBytes(0, bs);
-			return bs;
-		}
-		return null;
-	}
 	
-	/**
-	 * 获取报文的结束标识  正常获取返回true
-	 * @param in byteBuf
-	 * @return boolean
-	 */
-	public boolean isEnd(ByteBuf in){
-		
-		return in.readByte() == ConstantValue.END_DATA;
-	}
-
 
 }
