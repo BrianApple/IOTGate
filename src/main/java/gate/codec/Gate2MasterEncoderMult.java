@@ -1,7 +1,7 @@
 package gate.codec;
 
 
-import java.net.Inet4Address;
+
 import java.net.Inet6Address;
 
 import gate.base.chachequeue.CacheQueue;
@@ -22,9 +22,9 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * 再统一通过参数中的ByteBuf将数据发送，否则当，前置不是通过netty写的时候，
  * 会导致每次前置收到的报文都是不完整的！
  * 
- * @author BriansPC
+ * @author yangcheng
  */
-public class Gate2MasterEncoder extends MessageToByteEncoder<ChannelData>{
+public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 
 	/**
 	 * 当前ChannelHandlerContext  是与前置相连的channel的上下文
@@ -32,22 +32,20 @@ public class Gate2MasterEncoder extends MessageToByteEncoder<ChannelData>{
 	@Override
 	protected void encode(ChannelHandlerContext ctx, ChannelData msg, ByteBuf out) throws Exception {
 		
-		String rmote = ctx.channel().remoteAddress().toString();
-//		System.out.println("remoteMasterIP = "+rmote);
 		/**
 		 * 组网关报头
 		 */
 		String ipAddress = msg.getIpAddress();//.replaceAll("\\/", "");
-		System.out.println("Terminal ipAddress===="+ipAddress);
+//		System.out.println("Terminal ipAddress===="+ipAddress);
 		int count = CacheQueue.ipCountRelationCache.get(ipAddress);
 		
 		SocketData data = msg.getSocketData();
 		
-		//计算整个报文（包含68和16的长度）
-		int len = (data.getLenArea()[0] & 0xFF) + ((data.getLenArea()[1] & 0xFF) << 8 );
+		ByteBuf cliDataBuf = data.getByteBuf();
+		int lenth = cliDataBuf.readableBytes();
 		GateHeader headBuf= new GateHeader(); 
 		headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
-		headBuf.writeInt16(Integer.valueOf(len + 2 ));//整个长度
+		headBuf.writeInt16(lenth);//整个真实报文长度
 		headBuf.writeInt8(Integer.valueOf(1).byteValue());//type
 		if(ipAddress.split("\\|")[0].contains(".")){
 			headBuf.writeInt8(Integer.valueOf(0).byteValue());//protocolType
@@ -78,16 +76,17 @@ public class Gate2MasterEncoder extends MessageToByteEncoder<ChannelData>{
 		ByteBuf outData = Unpooled.directBuffer();
 		outData.writeBytes(headBuf.getDataBuffer());
 		//真实报文
-		outData.writeByte(data.getHeader());
-		outData.writeBytes(data.getLenArea());
-		outData.writeBytes(data.getContent());
-		outData.writeByte(data.getEnd());
+		outData.writeBytes(cliDataBuf);
+		//------------------------------------------
+//		byte[] car = new byte[outData.readableBytes()];
+//		for(int i = 0;i<outData.readableBytes() ; i++){
+//			car[i] = outData.getByte(i);
+//		}
+//		System.out.println("GATE UP = "+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));
+//		outData.readerIndex(0);
+		//--------------------------
 		out.writeBytes(outData);
-		byte[] car = new byte[outData.readableBytes()];
-		for(int i = 0;i<outData.readableBytes() ; i++){
-			car[i] = outData.getByte(i);
-		}
-		System.out.println("GATE UP = "+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));
+		CommonUtil.releaseByteBuf(cliDataBuf);
 	}
 
 

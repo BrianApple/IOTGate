@@ -49,7 +49,7 @@ public class ClientChannelCache {
 	public static  void set(String key , Channel value){
 		
 		getCacheInstance(key).put(key, value);
-		logOut("新增数据");
+//		logOut("新增数据");
 	}
 	/**
 	 * 获取数据
@@ -62,13 +62,9 @@ public class ClientChannelCache {
 	}
 	
 	public static void removeOne(String key){
-//		ConcurrentHashMap<String, Channel> coHashMap =getCacheInstance(key);
-//		if(coHashMap.containsKey(key)){
-//			coHashMap.remove(key);
-//		}
 		
 		getCacheInstance(key).remove(key);
-		logOut("删除数据");
+//		logOut("删除数据");
 	}
 	/**
 	 * 清空所有缓存所有数据

@@ -18,7 +18,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
-
+/**
+ * 通用通讯客户端
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月20日
+ */
 public class RemoteClient {
 	
 	private final Bootstrap bootstrap = new Bootstrap();

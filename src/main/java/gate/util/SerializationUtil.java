@@ -13,8 +13,10 @@ import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 
 /**
- * 序列化工具类（基于 Protostuff 实现）
- *
+ * 
+ * @Description: 
+ * @author  Internet
+ * @date:   2019年3月20日
  */
 public class SerializationUtil {
 
@@ -64,8 +66,7 @@ public class SerializationUtil {
     public static <T> T deserialize(byte[] data, Class<T> cls) {
         try {
         	/*
-        	 * 如果一个类没有参数为空的构造方法时候，那么你直接调用newInstance方法试图得到一个实例对象的时候是会抛出异常的
-        	 * 通过ObjenesisStd可以完美的避开这个问题
+        	 * 使用ObjenesisStd就算反序列化对象没有空构造  也可正常工作   fastJson就不行！
         	 * */
             T message = (T) objenesis.newInstance(cls);//实例化
             Schema<T> schema = getSchema(cls);//获取类的schema

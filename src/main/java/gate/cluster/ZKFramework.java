@@ -69,7 +69,7 @@ public class ZKFramework {
 		System.out.println("zk连接成功。。。。。");
 		try {
 			zNodeListener();
-//			addClusterNode();
+			addGateNode();
 //			downloadData2LocalCache();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -158,6 +158,18 @@ public class ZKFramework {
 		}, 1, 1, TimeUnit.MINUTES);
 		
 		
+	}
+	/**
+	 * 
+	 */
+	public void addGateNode(){
+		try {
+			String addr = MixAll.linuxLocalIP();
+			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/iotGate2RPC/"+addr,addr.getBytes());
+			System.out.println("********zookeeper注册GATE信息成功！********");
+		} catch (Exception e) {
+			System.err.println("zookeeper注册GATE信息失败");
+		}
 	}
 	
 	/**

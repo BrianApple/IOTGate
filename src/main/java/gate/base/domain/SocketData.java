@@ -1,16 +1,18 @@
 package gate.base.domain;
 
-import java.io.Serializable;
 
-import gate.util.StringUtils;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * 报文实体
  * @author BriansPC
  *
  */
-public class SocketData implements Serializable{
+public class SocketData {
 	
+	private ByteBuf byteBuf;
+	private int pId;
 	//报文头
 	private byte header;
 	//报文长度
@@ -20,6 +22,11 @@ public class SocketData implements Serializable{
 	//结尾16
 	private byte end;
 	
+	
+	public SocketData(ByteBuf byteBuf) {
+		super();
+		this.byteBuf = byteBuf;
+	}
 	public SocketData(byte header, byte[] lenArea, byte[] content, byte end) {
 		super();
 		this.header = header;
@@ -50,6 +57,18 @@ public class SocketData implements Serializable{
 	}
 	public void setEnd(byte end) {
 		this.end = end;
+	}
+	public ByteBuf getByteBuf() {
+		return byteBuf;
+	}
+	public void setByteBuf(ByteBuf byteBuf) {
+		this.byteBuf = byteBuf;
+	}
+	public int getpId() {
+		return pId;
+	}
+	public void setpId(int pId) {
+		this.pId = pId;
 	}
 	
 	

@@ -50,11 +50,21 @@ public class moniTerminal {
 		//服务端是绑定到服务器某个端口就行，但是客户端是需要连接到指定ip+指定端口的 因此方法不一样
 				ChannelFuture channelFuture=bootstrap.connect("127.0.0.1", 9811).sync();
 				for(int i = 0; i<1 ; i++){
-					byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
+					if(i == 2){
+						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
+						
+						channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
+						
+//						Thread.sleep(2000);
+
+					}else{
+						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
+						
+						channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
+						
+//						Thread.sleep(2000);
+					}
 					
-					channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
-					
-					Thread.sleep(2000);
 				}
 				channelFuture.channel().closeFuture().sync();
 				work.shutdownGracefully();

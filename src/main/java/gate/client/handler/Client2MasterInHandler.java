@@ -15,13 +15,19 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelD
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, ChannelData msg) throws Exception {
-		String str=  StringUtils.encodeHex(msg.getSocketData().getLenArea())+StringUtils.encodeHex(msg.getSocketData().getContent());
+//		String str=  StringUtils.encodeHex(msg.getSocketData().getLenArea())+StringUtils.encodeHex(msg.getSocketData().getContent());
 		
 		
 		Channel channel = ClientChannelCache.get(msg.getIpAddress());
 		if(channel != null){
+			
+			int len = msg.getSocketData().getByteBuf().readableBytes();
+			byte[] car =  new byte[len];
+			msg.getSocketData().getByteBuf().readBytes(car);
+			msg.getSocketData().getByteBuf().readerIndex(0);
+//			System.out.println("Gate Down = "+StringUtils.encodeHex(car));
 			channel.writeAndFlush(msg);
-			System.out.println("Gate Down = 68"+str+"16");
+			
 		}
 	}
 	@Override

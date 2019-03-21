@@ -12,17 +12,12 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @author BriansPC
  *
  */
-public class Gate2ClientEncoder extends MessageToByteEncoder<ChannelData>{
+public class Gate2ClientEncoderMulti extends MessageToByteEncoder<ChannelData>{
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, ChannelData msg, ByteBuf out) throws Exception {
 		SocketData data = msg.getSocketData();
 
-		ByteBuf buf = Unpooled.directBuffer();
-		buf.writeByte(data.getHeader());
-		buf.writeBytes(data.getLenArea());
-		buf.writeBytes(data.getContent());
-		buf.writeByte(data.getEnd());
-		out.writeBytes(buf);
+		out.writeBytes(data.getByteBuf());
 	}
 }

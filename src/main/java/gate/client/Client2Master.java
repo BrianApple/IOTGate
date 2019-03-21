@@ -1,22 +1,18 @@
 package gate.client;
 
 import java.net.Inet4Address;
+
 import java.net.InetSocketAddress;
 
-import gate.base.chachequeue.CacheQueue;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.GateHeader;
-import gate.base.domain.SocketData;
 import gate.client.handler.Client2MasterInHandler;
-import gate.codec.Gate2ClientDecoder;
-import gate.codec.Gate2ClientEncoder;
-import gate.codec.Gate2MasterDecoder;
-import gate.codec.Gate2MasterEncoder;
+import gate.codec.Gate2MasterDecoderMult;
+import gate.codec.Gate2MasterEncoderMult;
 import gate.util.CommonUtil;
 import gate.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -52,8 +48,8 @@ public class Client2Master {
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
 				//添加控制链
-				ch.pipeline().addLast(new Gate2MasterDecoder());
-				ch.pipeline().addLast(new Gate2MasterEncoder());//自定义编解码器
+				ch.pipeline().addLast(new Gate2MasterDecoderMult());
+				ch.pipeline().addLast(new Gate2MasterEncoderMult());//自定义编解码器
 				ch.pipeline().addLast(new Client2MasterInHandler());
 			}
 			

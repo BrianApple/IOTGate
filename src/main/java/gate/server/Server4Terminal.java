@@ -1,6 +1,7 @@
 package gate.server;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -16,8 +17,8 @@ import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.client.Client2Master;
 import gate.cluster.ZKFramework;
-import gate.codec.Gate2ClientDecoder;
-import gate.codec.Gate2ClientEncoder;
+import gate.codec.Gate2ClientDecoderMulti;
+import gate.codec.Gate2ClientEncoderMulti;
 import gate.rpc.rpcProcessor.RPCProcessor;
 import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import gate.server.handler.SocketInHandler;
@@ -60,8 +61,9 @@ public class Server4Terminal {
 				//心跳检测,超时时间300秒，指定时间中没有读写操作会触发IdleStateEvent事件
 				ch.pipeline().addLast(new IdleStateHandler(0, 0, 300, TimeUnit.SECONDS));
 				//自定义编解码器  需要在自定义的handler的前面即pipeline链的前端,不能放在自定义handler后面，否则不起作用
-				ch.pipeline().addLast("decoder",new Gate2ClientDecoder());
-				ch.pipeline().addLast("encoder",new Gate2ClientEncoder());
+				ch.pipeline().addLast("decoder",new Gate2ClientDecoderMulti(1, false, 1024, 1, 2, true, 1));//698长度域表示不包含起始符和结束符长度
+//				ch.pipeline().addLast("decoder",new Gate2ClientDecoder());//698长度域表示不包含起始符和结束符长度
+				ch.pipeline().addLast("encoder",new Gate2ClientEncoderMulti());
 				ch.pipeline().addLast(new SocketInHandler());
 			}
 		});

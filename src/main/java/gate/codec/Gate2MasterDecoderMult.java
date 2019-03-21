@@ -7,6 +7,7 @@ import java.util.List;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
+import gate.util.CommonUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -17,28 +18,23 @@ import io.netty.handler.codec.ByteToMessageDecoder;
  * @author BriansPC
  *
  */
-public class Gate2MasterDecoder  extends ByteToMessageDecoder{
+public class Gate2MasterDecoderMult  extends ByteToMessageDecoder{
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		
-		
+		ByteBuf tmnlDataBuf = CommonUtil.getDirectByteBuf();
 		//解码网关头 获取终端ip
-		String clientIp = decodeGateHeader(in);
-		if(clientIp != null){
-			//解码真实下行报文体（68...16）信息到ChannelData对象
-			ChannelData channeldata = decodeSocketData(in);
-			if(channeldata !=  null){
-				channeldata.setIpAddress(clientIp);
-				out.add(channeldata);
-			}
+		ChannelData channelData = decodeGateHeader(in);
+		if(channelData != null){
+			out.add(channelData);
 			
 		}
 		
 		
 
 	}
-	public String decodeGateHeader(ByteBuf in){
+	public ChannelData decodeGateHeader(ByteBuf in){
 		if(in.readableBytes()>31){
 			//网关头固定为28位  加SocketData至少3位
 			StringBuilder clientIpAddress ;
@@ -49,15 +45,18 @@ public class Gate2MasterDecoder  extends ByteToMessageDecoder{
 				int gateHeader = in.readByte() & 0xFF;
 				if(gateHeader == ConstantValue.GATE_HEAD_DATA){
 					//1.获取到网关头A8
-					int socketDataLen = readLenArea(in);
+					int socketDataLen = in.readShortLE();// readLenArea(in);
 					if(in.readableBytes() >= (socketDataLen+25) ){
 						//报文完整
 						in.skipBytes(1);
 						boolean isIPV4 = true;
+						int pId = -1;
 						{
 							int sig = in.readByte()&0xFF;
+							pId = sig & 127 ;
 							int type = sig >> 7 & 1;
-							isIPV4 = type == 0	? true : false;					
+							isIPV4 = type == 0	? true : false;	
+							
 						}
 						clientIpAddress = new StringBuilder();
 						if(isIPV4){
@@ -86,7 +85,15 @@ public class Gate2MasterDecoder  extends ByteToMessageDecoder{
 						}
 						clientIpAddress.append("|");
 						clientIpAddress.append(readLenArea(in));
-						return clientIpAddress.toString();
+						
+						in.skipBytes(4);//连接次数
+						SocketData data = new SocketData(in.readBytes(socketDataLen));
+						data.setpId(pId);//规约类型
+						ChannelData channelData =  new ChannelData(data);
+						channelData.setIpAddress(clientIpAddress.toString());
+						
+						
+						return channelData;
 					}else{
 						//报文不完整
 						in.readerIndex(beginReader);

@@ -6,7 +6,9 @@ import gate.base.cache.ClientChannelCache;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
+import gate.util.CommonUtil;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,13 +25,10 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		
 		//需要先去掉解报头  即A8开头的报头
-		ByteBuf gateHeadData = Unpooled.directBuffer();
+		ByteBuf gateHeadData = CommonUtil.getDirectByteBuf();
 		boolean flag = decodeGateHeaderbyByteBuf(in,gateHeadData);
 		if(flag){
-			/**
-			 * 是网关登录报文，模拟前置暂时没有处理，真实前置需要写缓存等.....
-			 */
-			System.out.println("网关登录成功");
+//			System.out.println("网关登录成功");  
 		}else{
 			//解码真实下行报文体（68...16）信息到ChannelData对象
 			ByteBuf contentBuf = decodeSocketData(in);
@@ -39,54 +38,7 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 		
 	}
 	
-	/**
-	 * 解析网关报文头  返回终端ip（包含端口）
-	 * @param in
-	 * @return
-	 */
-	public String decodeGateHeader(ByteBuf in){
-		if(in.readableBytes()>31){
-			//网关头固定为28位  加SocketData至少3位
-			StringBuilder clientIpAddress ;
-			int beginReader;
-			
-			while (true) {
-				beginReader = in.readerIndex();
-				int gateHeader = in.readByte() & 0xFF;
-				if(gateHeader == ConstantValue.GATE_HEAD_DATA){
-					//获取到网关头A8
-					int socketDataLen = readLenArea(in);
-					if(in.readableBytes() >= (socketDataLen+25) ){
-						//报文完整
-						in.skipBytes(15);//直接将读指针跳到终端ip处
-						clientIpAddress = new StringBuilder();
-						clientIpAddress.append(in.readByte());
-						clientIpAddress.append(".");
-						clientIpAddress.append(in.readByte());
-						clientIpAddress.append(".");
-						clientIpAddress.append(in.readByte());
-						clientIpAddress.append(".");
-						clientIpAddress.append(in.readByte());
-						clientIpAddress.append(":");
-						clientIpAddress.append(readLenArea(in));
-						
-						return clientIpAddress.toString();
-					}else{
-						//报文不完整，复原读指针 结束本次读取
-						in.readerIndex(beginReader);
-						break;
-					}
-				}else{
-					if (in.readableBytes() <= 31) {
-						return null;
-					}
-					continue ;
-				}
-			}
-		}
-		
-		return null;
-	}
+	
 	/**
 	 * 解析网关报文头 返回网关报头字节数据
 	 * @param in 传输数据的buf
@@ -106,8 +58,8 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 					butebuf.writeByte(gateHeader);
 					// 获取到网关头A8
 					byte[] lenArea = new byte[2];
-					butebuf.writeBytes(lenArea);
 					int socketDataLen = readLenArea(in,lenArea);
+					butebuf.writeBytes(lenArea);
 					if(socketDataLen == 0){
 						//网关登录报文判断 
 						if(in.readableBytes() == 25 ){
@@ -137,11 +89,8 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 					}
 					
 				}else{
-					if (in.readableBytes() <= 31) {
-						//如果当前缓存中剩余未读字节数小于31则直接跳出循环
-						return true;
-					}
-					continue ;
+					
+					break ;
 				}
 			}
 		}
