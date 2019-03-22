@@ -19,6 +19,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 
 import gate.base.cache.ClientChannelCache;
+import gate.base.cache.ProtocalStrategyCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.client.Client2Master;
 import gate.cluster.ZKFramework;
@@ -62,6 +63,8 @@ public class Entrance {
 		for(int i = 0 ; i < protocolType.length ; i++){
 			//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
 			String pts =  protocolType[i];
+			String pid = pts.split("\\,")[0];//pId
+			
 			new Thread(new Runnable() {
 				public void run() {
 					// TODO Auto-generated method stub
@@ -70,11 +73,13 @@ public class Entrance {
 					boolean isBigEndian = "0".equals(pt[1]) ? false : true;
 					boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[5]) ? false : true;
 					System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s", Integer.parseInt(pt[0]),Integer.parseInt(pt[7])));
-					Server4Terminal.bindAddress(Server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
-							Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6])),Integer.parseInt(pt[7]));//1, false, -1, 1, 2, true, 1
+					Server4Terminal server4Terminal = new Server4Terminal(pt[0],pt[7]);
+					server4Terminal.bindAddress(server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
+							Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6])));//1, false, -1, 1, 2, true, 1
 					
 				}
-			},"gate2tmnlThread_"+i).start();
+			},"gate2tmnlThread_pid_"+pid).start();
+			ProtocalStrategyCache.protocalStrategyCache.put(pid, pts);
 		}		
 		
 		

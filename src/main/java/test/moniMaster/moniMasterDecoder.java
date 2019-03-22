@@ -26,7 +26,6 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 		
-		ByteBuf tmnlDataBuf = CommonUtil.getDirectByteBuf();
 		//解码网关头 获取终端ip
 		ChannelData channelData = decodeGateHeader(in);
 		if(channelData != null){

@@ -1,7 +1,6 @@
 package gate.cluster;
 
 
-import java.net.SocketException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -27,7 +25,6 @@ import gate.Entrance;
 import gate.base.domain.LocalCache;
 import gate.concurrent.BasicThreadPoolTaskExecutor;
 import gate.concurrent.ThreadFactoryImpl;
-import gate.server.Server4Terminal;
 import gate.util.MixAll;
 
 

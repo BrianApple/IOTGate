@@ -3,6 +3,7 @@ package gate.codec;
 
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
+import gate.util.CommonUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -18,5 +19,6 @@ public class Gate2ClientEncoderMulti extends MessageToByteEncoder<ChannelData>{
 		SocketData data = msg.getSocketData();
 
 		out.writeBytes(data.getByteBuf());
+		CommonUtil.releaseByteBuf(data.getByteBuf());
 	}
 }

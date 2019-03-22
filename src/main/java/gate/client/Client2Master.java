@@ -73,7 +73,8 @@ public class Client2Master {
 		//获取网关本地地址
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
 		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-		channelFuture.channel().writeAndFlush(loginGateHeader(ipAddress));
+		ByteBuf buf = loginGateHeader(ipAddress);
+		channelFuture.channel().writeAndFlush(buf);
 		
 		channelFuture.channel().closeFuture().sync();
 	}

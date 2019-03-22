@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 
 import gate.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -14,8 +13,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
 import test.CountHelper;
 
 /**
@@ -51,34 +48,32 @@ public class moniTerminal {
 		
 				ChannelFuture channelFuture=bootstrap.connect("127.0.0.1", port).sync();
 				for(int i = 0; i<1 ; i++){
-					if(i == 2){
-						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
-						
-						channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
-						
-//						Thread.sleep(2000);
-
-					}else{
+//					Thread.sleep(5000);
+//					if(i % 2 == 0){
+//						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
+//						
+//						channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
+//					}else{
 						/**
 						 * 规约类型1
 						 */
-//						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
+						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
 						/**
 						 * 规约类型2
 						 */
 						
-						byte[] data = StringUtils.decodeHex("0000001906343030303132F200077076636C6F7564077076636C6F7564");
+//						byte[] data = StringUtils.decodeHex("0000001906343030303132F200077076636C6F7564077076636C6F7564");
 						
 						channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
 						
-//						Thread.sleep(2000);
-					}
+						
+//					}
 					
 				}
 				channelFuture.channel().closeFuture().sync();
 				work.shutdownGracefully();
 	}
-	private static int port = 9812; 
+	private static int port = 9811; 
 	
 	public static void main(String[] args) throws InterruptedException {
 		/**

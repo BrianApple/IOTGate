@@ -78,12 +78,12 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		//真实报文
 		outData.writeBytes(cliDataBuf);
 		//------------------------------------------
-		byte[] car = new byte[outData.readableBytes()];
-		for(int i = 0;i<outData.readableBytes() ; i++){
-			car[i] = outData.getByte(i);
-		}
-		System.out.println("GATE UP = "+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));
-		outData.readerIndex(0);
+//		byte[] car = new byte[outData.readableBytes()];
+//		for(int i = 0;i<outData.readableBytes() ; i++){
+//			car[i] = outData.getByte(i);
+//		}
+//		System.out.println("GATE UP = "+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));
+//		outData.readerIndex(0);
 		//--------------------------
 		out.writeBytes(outData);
 		
