@@ -27,10 +27,12 @@ public interface RPCExportService {
 	
 	/**
 	 * 新增规约
+	 * @param pid
 	 * @param str
+	 * @param startAtOnce  是否立即启动服务
 	 * @return
 	 */
-	ResponseData addNewProtocal(List<Integer> str);
+	ResponseData addNewProtocal(String pid ,List<Integer> str,boolean startAtOnce);
 	
 	/**
 	 * 更新规约

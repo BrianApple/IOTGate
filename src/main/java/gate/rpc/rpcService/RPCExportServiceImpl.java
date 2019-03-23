@@ -29,15 +29,38 @@ public class RPCExportServiceImpl implements RPCExportService{
 	
 	@Override
 	public ResponseData getAllProtocal() {
-		// TODO Auto-generated method stub
-		return null;
+		ResponseData responseData = new ResponseData();
+		List<Object> list = new ArrayList<>();
+		list.add(ProtocalStrategyCache.protocalStrategyCache);
+		responseData.setData(list);
+		return responseData;
 	}
 
 
 	@Override
-	public ResponseData addNewProtocal(List<Integer> str) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseData addNewProtocal(String pid,List<Integer> str,boolean startAtOnce) {
+		ResponseData responseData = new ResponseData();
+		if(pid == null|| "".equals(pid) || str == null || str.isEmpty() || str.size()<8){
+			responseData.setReturnCode(500);
+			responseData.setErroInfo(new IllegalArgumentException("参数不正确,请检查参数设置！"));
+			return responseData;
+		}
+		if(ProtocalStrategyCache.protocalStrategyCache.contains(pid)){
+			//exist
+			return responseData;
+		}else{
+			//not exist
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < str.size(); i++) {
+				sb.append(str.get(i)+",");
+			}
+			String newStraPro = sb.toString();
+			ProtocalStrategyCache.protocalStrategyCache.put(pid, newStraPro.substring(0, newStraPro.length()-1));
+		}
+		if(startAtOnce){
+			return startProtocalServiceByPid(pid);
+		}
+		return responseData;
 	}
 
 	
