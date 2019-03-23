@@ -40,7 +40,7 @@ public interface RPCExportService {
 	ResponseData updateProtocalByPid(String pid,List<Integer> str);
 	
 	/**
-	 * 删除规约
+	 * 删除规约，删除之后不能再有其它操作
 	 * @param str
 	 * @return
 	 */
@@ -48,7 +48,7 @@ public interface RPCExportService {
 	
 	//----------------------------------------------------------
 	/**
-	 * 通过指定端口开启相关网关服务
+	 * 通过指定端口开启被stop的网关服务
 	 * @param str
 	 * @return
 	 */

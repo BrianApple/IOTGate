@@ -93,6 +93,11 @@ public class Server4Terminal {
 	 */
 	public void close(){
 		CommonUtil.closeEventLoop(boss,work);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		//删除缓存种对应网关规约服务
 		ProtocalStrategyCache.protocalServerCache.remove(pId);
 	}
