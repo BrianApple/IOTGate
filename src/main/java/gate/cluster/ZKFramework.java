@@ -22,7 +22,10 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
 import gate.Entrance;
+import gate.base.cache.Cli2MasterLocalCache;
+import gate.base.cache.ZKMasterNodeLocalCache;
 import gate.base.domain.LocalCache;
+import gate.client.Client2Master;
 import gate.concurrent.BasicThreadPoolTaskExecutor;
 import gate.concurrent.ThreadFactoryImpl;
 import gate.util.MixAll;
@@ -36,7 +39,9 @@ import gate.util.MixAll;
  */
 public class ZKFramework {
 	
-	 ExecutorService basicTaskExecutor = BasicThreadPoolTaskExecutor.getBasicExecutor() ;
+	private ExecutorService basicTaskExecutor = BasicThreadPoolTaskExecutor.getBasicExecutor() ;
+	
+	private Cli2MasterLocalCache cli2MasterLocalCache = Cli2MasterLocalCache.getInstance();
 	
 	private CuratorFramework cf ;
 	private final ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -44,7 +49,7 @@ public class ZKFramework {
 	
 	private final String PARENT_PATH = "/iotGate2Master";
 	
-	LocalCache zkNodeCache = ZKlocalCache.getInstance();
+	LocalCache zkNodeCache = ZKMasterNodeLocalCache.getInstance();
 	
 	public void init(String zkAddr){
 		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
@@ -92,7 +97,8 @@ public class ZKFramework {
 					System.out.println("CHILD_ADDED :" + event.getData().getPath());
 					try {
 						String val = new String(event.getData().getData());
-						Entrance.masterAddrs.add(val);
+//						Entrance.masterAddrs.add(val);
+						link2MasterNode(val);
 						addNode2Cache(val);
 						Entrance.locks.countDown();
 					} catch (Exception e) {
@@ -107,9 +113,12 @@ public class ZKFramework {
 					break;
 				case CHILD_REMOVED:
 					System.out.println("CHILD_REMOVED :" + event.getData().getPath());
-//					System.out.println("DATA :" + new String(event.getData().getData()));
+					String ip = new String(event.getData().getData());
 					try {
-						delNode2Cache(new String(event.getData().getData()));
+						delNode2Cache(ip);
+						Client2Master  client2Master=(Client2Master) cli2MasterLocalCache.get(ip);
+						//关闭与相应前置对应的client
+						client2Master.close();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -197,8 +206,24 @@ public class ZKFramework {
 		
 		zkNodeCache.del(nodeIp);
 	}
-	
-	
+	/**
+	 * 
+	 * @param addr
+	 */
+	private void link2MasterNode(String addr){
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					System.out.println(String.format("！！！前置服务%s连接成功,前置端口必须为8888", addr));
+					Client2Master client2Master = new Client2Master();
+					client2Master.bindAddress2Client(client2Master.configClient(),addr,8888);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		},"gate2masterThread_ip_"+addr).start();
+	}
 	
 	public void start(String zkAddr){
 		if(isCluster()){

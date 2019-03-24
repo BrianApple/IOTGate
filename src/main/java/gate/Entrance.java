@@ -51,6 +51,24 @@ public class Entrance {
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
+		}else{
+			//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
+			
+			for(int i = 0 ; i < masterAddrs.size() ; i++){
+				String addr = masterAddrs.get(i);
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							System.out.println(String.format("！！！前置服务%s连接成功,前置端口必须为8888", addr));
+							Client2Master client2Master = new Client2Master();
+							client2Master.bindAddress2Client(client2Master.configClient(),addr,8888);
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				},"gate2masterThread_ip_"+addr).start();
+			}
 		}
 		
 		/**
@@ -81,22 +99,7 @@ public class Entrance {
 		
 		
 		
-		//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
 		
-		for(int i = 0 ; i < masterAddrs.size() ; i++){
-			String addr = masterAddrs.get(i);
-			new Thread(new Runnable() {
-				public void run() {
-					try {
-						System.out.println(String.format("！！！前置服务%s连接成功,前置端口必须为8888", addr));
-						Client2Master.bindAddress2Client(Client2Master.configClient(),addr,8888);
-						
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			},"gate2masterThread_"+i).start();
-		}
 		
 		try {
 			processor.exportService();

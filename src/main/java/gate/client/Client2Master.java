@@ -4,6 +4,7 @@ import java.net.Inet4Address;
 
 import java.net.InetSocketAddress;
 
+import gate.base.cache.Cli2MasterLocalCache;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.GateHeader;
 import gate.client.handler.Client2MasterInHandler;
@@ -32,8 +33,11 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @author BriansPC
  */
 public class Client2Master {
-	private static EventLoopGroup worker = new NioEventLoopGroup();
-	public static Bootstrap configClient(){
+	private  EventLoopGroup worker = new NioEventLoopGroup();
+	private Cli2MasterLocalCache cli2MasterLocalCache = Cli2MasterLocalCache.getInstance();
+	private String ip;
+	
+	public  Bootstrap configClient(){
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.group(worker)
 		.channel(NioSocketChannel.class)
@@ -63,7 +67,9 @@ public class Client2Master {
 	 * @param port
 	 * @throws Exception 
 	 */
-	public static void bindAddress2Client(Bootstrap bootstrap,String ip, int port) throws Exception{
+	public void bindAddress2Client(Bootstrap bootstrap,String ip, int port) throws Exception{
+		cli2MasterLocalCache.set(ip, this);
+		this.ip = ip;
 		ChannelFuture channelFuture=bootstrap.connect(ip, port).sync();
 		
 		/**
@@ -84,7 +90,7 @@ public class Client2Master {
 	 * @param channel
 	 * @throws Exception 
 	 */
-	public static ByteBuf loginGateHeader(String LocalIpAddress) throws Exception{
+	public ByteBuf loginGateHeader(String LocalIpAddress) throws Exception{
 		/**
 		 * 创建直接内存形式的ByteBuf，不能使用array()方法，但效率高
 		 */
@@ -118,6 +124,12 @@ public class Client2Master {
 		out.writeBytes(headBuf.getDataBuffer());
 		return out;
 	}
-	
+	/**
+	 * 关闭服务
+	 */
+	public void close(){
+		CommonUtil.closeEventLoop(worker);
+		cli2MasterLocalCache.del(ip);
+	}
 
 }

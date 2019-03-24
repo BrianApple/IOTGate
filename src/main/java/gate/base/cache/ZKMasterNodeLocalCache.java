@@ -1,4 +1,4 @@
-package gate.cluster;
+package gate.base.cache;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,11 +9,11 @@ import gate.base.domain.LocalCache;
  * @author  yangcheng
  * @date:   2019年3月14日
  */
-public class ZKlocalCache implements LocalCache{
+public class ZKMasterNodeLocalCache implements LocalCache{
 	
 	private  ConcurrentHashMap<String, String> zknodeCache = null;
 	
-	private ZKlocalCache(){
+	private ZKMasterNodeLocalCache(){
 		if(inner.zkLocalCache != null){
 			throw new IllegalStateException("禁止创建gate.cluster.ZKlocalCache对象！");
 		}
@@ -22,7 +22,7 @@ public class ZKlocalCache implements LocalCache{
 	
 	
 	static class inner{
-		static ZKlocalCache zkLocalCache = new ZKlocalCache();
+		static ZKMasterNodeLocalCache zkLocalCache = new ZKMasterNodeLocalCache();
 		
 	}
 	
@@ -42,8 +42,8 @@ public class ZKlocalCache implements LocalCache{
 		return zknodeCache.remove(key) == null;
 	}
 	
-	public static ZKlocalCache getInstance(){
-		return ZKlocalCache.inner.zkLocalCache;
+	public static ZKMasterNodeLocalCache getInstance(){
+		return ZKMasterNodeLocalCache.inner.zkLocalCache;
 	}
 
 	
