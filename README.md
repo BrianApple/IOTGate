@@ -12,8 +12,8 @@ new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024)
 ***
 ### 入口类:
 	Entrance.java
-### API地址
-	https://apidoc.gitee.com/willbeahero/IOTGate
+### 说明文档地址
+	https://blog.csdn.net/sinat_28771747/article/category/8788959
 ### 命令行参数说明
 
 |      参数      | 是否必选 |是否含参| 含义 |
@@ -25,7 +25,7 @@ new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024)
 | 		-f	   |	是  | 是  | 配置文件"iotGate.conf"的本地全路径   |
 
 ### 如何启动
-自行将项目打成jar包，在linux下，执行java -jar  -n  1 [args...] iotGate.jar   默认前置端口为8888，可自行源码中修改
+自行将项目打成jar包，在linux下，执行java -jar iotGate.jar -n  1 [args...]  默认前置端口为8888，可自行源码中修改
  - 单机方式启动 ：命令行参数使用“-m”指定前置服务地址
  - 集群方式启动：命令行参数“-c”开启zookeeper集群模式，“-z”指定zookeeper集群的地址（逗号分隔）
 ### 自定义网关头结构与注意事项
