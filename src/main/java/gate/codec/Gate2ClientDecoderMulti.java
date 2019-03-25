@@ -13,7 +13,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 /**
- * 多规约解码器
+ * 长度域定长多规约解码器
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月20日
@@ -28,6 +28,17 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 	private int exceptDataLenth;
 	private int initialBytesToStrip;//默认为0
 	
+	/**
+	 * 全参构造
+	 * @param pId
+	 * @param isBigEndian
+	 * @param beginHexVal
+	 * @param lengthFieldOffset
+	 * @param lengthFieldLength
+	 * @param isDataLenthIncludeLenthFieldLenth
+	 * @param exceptDataLenth
+	 * @param initialBytesToStrip
+	 */
 	public Gate2ClientDecoderMulti( int pId, boolean isBigEndian, int beginHexVal, int lengthFieldOffset, int lengthFieldLength,
 			boolean isDataLenthIncludeLenthFieldLenth, int exceptDataLenth, int initialBytesToStrip) {
 		super();
@@ -41,7 +52,16 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 		this.initialBytesToStrip = initialBytesToStrip;
 	}
 	
-
+	/**
+	 * 默认起始偏移量为0
+	 * @param pId
+	 * @param isBigEndian
+	 * @param beginHexVal
+	 * @param lengthFieldOffset
+	 * @param lengthFieldLength
+	 * @param isDataLenthIncludeLenthFieldLenth
+	 * @param exceptDataLenth
+	 */
 	public Gate2ClientDecoderMulti(int pId, boolean isBigEndian, int beginHexVal, int lengthFieldOffset, int lengthFieldLength,
 			boolean isDataLenthIncludeLenthFieldLenth, int exceptDataLenth) {
 		this(pId, isBigEndian, beginHexVal, lengthFieldOffset, lengthFieldLength,
