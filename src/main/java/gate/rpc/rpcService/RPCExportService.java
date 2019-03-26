@@ -26,16 +26,16 @@ public interface RPCExportService {
 	
 	
 	/**
-	 * 新增规约
+	 * 新增规约策略
 	 * @param pid
-	 * @param str
+	 * @param str 共8位 =pId+ isBigEndian+ beginHexVal+ lengthFieldOffset+ lengthFieldLength+ isDataLenthIncludeLenthFieldLenth+ exceptDataLenth+ port
 	 * @param startAtOnce  是否立即启动服务
 	 * @return
 	 */
 	ResponseData addNewProtocal(String pid ,List<Integer> str,boolean startAtOnce);
 	
 	/**
-	 * 更新规约
+	 * 更新规约策略
 	 * @param str
 	 * @return
 	 */
@@ -64,4 +64,15 @@ public interface RPCExportService {
 	ResponseData stopProtocalServiceByPid(String pId);
 	
 
+	//---------------------------------------------------------
+	//高级功能模块
+	/**
+	 * 通过自定义长度解析规则方式新增规约
+	 * @param pid
+	 * @param strategy 共7位 =pId+ isBigEndian+ beginHexVal+ lengthFieldOffset+ isDataLenthIncludeLenthFieldLenth+ exceptDataLenth+ port
+	 * @param Content 方法体
+	 * @return
+	 */
+	ResponseData addStrategyByAppointParseMethod(String pid,List<Integer> strategy ,String Content);
 }
+

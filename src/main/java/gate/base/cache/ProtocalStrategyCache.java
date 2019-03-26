@@ -25,12 +25,20 @@ public class ProtocalStrategyCache {
 	 */
 	public static ConcurrentHashMap<String, String> protocalStrategyCache ;
 	/**
-	 * 网关规约服务缓存---用于规约服务控制--key=pId
+	 * 网关规约服务缓存---用于规约服务控制-- key=pId
 	 */
 	public static ConcurrentHashMap<String, Server4Terminal> protocalServerCache ;
+	/**
+	 * 缓存IOTGate高级功能中得长度域解析器 Class地址
+	 * key = Pid
+	 * value = 全类名
+	 */
+	public static ConcurrentHashMap<String, String> protocalStrategyClassUrlCache ;
+	
 	static{
 		protocalStrategyCache = new ConcurrentHashMap<>();
 		protocalServerCache = new ConcurrentHashMap<>();
+		protocalStrategyClassUrlCache = new ConcurrentHashMap<>();
 	}
 	
 	/**

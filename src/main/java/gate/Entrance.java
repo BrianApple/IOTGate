@@ -175,9 +175,11 @@ public class Entrance {
 	
 	@SuppressWarnings("resource")
 	public static String[] getProtocolType(String filePath){
+		File conf=  new File(filePath);
+		System.setProperty("BasicDir",conf.getParent() );
 		BufferedReader bufferedReader =null;
         try {
-        	bufferedReader = new BufferedReader(new FileReader(new File(filePath)));
+        	bufferedReader = new BufferedReader(new FileReader(conf));
         	String str;
         	while((str = bufferedReader.readLine()) != null){
         		if(str.startsWith("protocolType")){
