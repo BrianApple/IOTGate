@@ -20,10 +20,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
- * 
  * 网关获取终端报文
- * @author BriansPC
- *
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
  */
 public class Server4Terminal {
 	/**

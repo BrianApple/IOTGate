@@ -17,9 +17,10 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 /**
- * 妯℃嫙缁堢  鍙戦�� 涓婅 鎶ユ枃
- * @author BriansPC
- *
+ * 
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
  */
 public class SocketInHandler extends ChannelInboundHandlerAdapter{
 

@@ -10,7 +10,12 @@ import gate.rpc.annotation.RPCService;
 import gate.rpc.dataBridge.RequestData;
 import gate.rpc.dataBridge.ResponseData;
 import gate.util.MixAll;
-
+/**
+ * 
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
+ */
 public class RPCProcessorImpl implements RPCProcessor {
 	
 	@Override

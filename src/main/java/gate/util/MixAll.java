@@ -18,7 +18,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.util.DeserializeBeanInfo;
-
+/**
+ * 
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
+ */
 public class MixAll {
 	private static final String CLASS_SUFFIX = ".class";
 	

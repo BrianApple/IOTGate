@@ -3,9 +3,10 @@ package gate.concurrent;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 /**
- * 
- * @author BriansPC
- *
+ * 基本线程池
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
  */
 public class BasicThreadPoolTaskExecutor {
 	private static ExecutorService  service=null;

@@ -190,27 +190,6 @@ public class RPCExportServiceImpl implements RPCExportService{
 	}
 
 	
-	@Override
-	public ResponseData addStrategyByAppointParseMethod(String pid,List<Integer> strategy ,String Content) {
-		ResponseData responseData = new ResponseData();
-		//BasicDir
-		String className = null;
-		try {
-			className = makeClass(pid , Content);
-		} catch (Exception e) {
-			e.printStackTrace();
-			responseData.setErroInfo(e);
-			responseData.setReturnCode(500);
-			return responseData;
-		}
-		if(className != null){
-			ProtocalStrategyCache.protocalStrategyClassUrlCache.put(pid, className);
-			addNewProtocal(pid,strategy,false);
-		}
-		return responseData;
-	}
-
-	
 	/**
 	 * 判断当前规约是否指定了自定义长度域解析方法
 	 * @param pid

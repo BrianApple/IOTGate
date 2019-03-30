@@ -13,8 +13,9 @@ import io.netty.channel.Channel;
 /**
  * 通过up2MasterQueue对列中获取从Server4Terminal发送过来的上行报文对象，
  * 并通过缓存的master的channel发送出去
- * @author BriansPC
- *
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
  */
 public class TServer2MClient implements Runnable{
 

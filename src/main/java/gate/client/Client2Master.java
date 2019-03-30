@@ -27,10 +27,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 /**
  * 网关与前置相连的客户端
- * 
- * 获取数据去要将A8网关头去掉
- * 
- * @author BriansPC
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
  */
 public class Client2Master {
 	private  EventLoopGroup worker = new NioEventLoopGroup();

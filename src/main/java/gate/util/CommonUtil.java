@@ -13,7 +13,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.ReferenceCountUtil;
-
+/**
+ * 
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
+ */
 public class CommonUtil {
 	/**
 	 * 网关编号

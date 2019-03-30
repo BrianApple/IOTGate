@@ -6,8 +6,9 @@ import io.netty.buffer.ByteBuf;
 
 /**
  * 报文实体
- * @author BriansPC
- *
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
  */
 public class SocketData {
 	

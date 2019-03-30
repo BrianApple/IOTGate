@@ -13,7 +13,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 /**
- * 动态 多规约解码器---高级功能
+ * 动态 多规约解码器---高级功能模块，目前暂未启用
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月26日

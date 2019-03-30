@@ -9,7 +9,12 @@ import gate.util.StringUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
+/**
+ * 
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
+ */
 public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelData>{
 
 	

@@ -6,7 +6,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Random;
-
+/**
+ * 
+ * @Description: 
+ * @author  yangcheng
+ * @date:   2019年3月30日
+ */
 public class StringUtils {
 	
 	private static Random randGen = new Random();
