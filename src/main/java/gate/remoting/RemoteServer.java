@@ -70,7 +70,6 @@ public class RemoteServer {
             }
         });
 
-		
 		try {
 		ChannelFuture sync = this.bootstrap.bind().sync();
 		InetSocketAddress addr = (InetSocketAddress) sync.channel().localAddress();
