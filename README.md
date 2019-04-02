@@ -22,8 +22,9 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 
 ### 如何启动
 自行将项目打成jar包，在linux下，执行java -jar iotGate.jar -n  1 [args...]  默认前置端口为8888，可自行源码中修改
- - 单机方式启动 ：命令行参数使用“-m”指定前置服务地址
+ - 单机方式启动 ：命令行参数使用“-m”指定前置服务地址 
  - 集群方式启动：命令行参数“-c”开启zookeeper集群模式，“-z”指定zookeeper集群的地址（逗号分隔）
+ - **单机版网关不支持IOTGateConsole控制台动态维护，因为IOTGateConsole的节点发现依赖于zookeeper,集群版网关无论节点多少依然可以通过IOTGateConsole管理**
 ### 自定义网关头结构与注意事项
  
  网关报头，是网关与前置通信时，作为网关登录和传输真实报文时携带网关自身和终端响应参数的报文，报文结构是自己定义，前置按照定义好的报文格式获取数据并做相应处理。
@@ -77,10 +78,12 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 请看博客：https://blog.csdn.net/sinat_28771747/article/details/88783309
 ### GATE CLUSTER 结构图
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
-注：GATE CLIENT（项目名称“IOTGateConsole”，项目在我的码云首页可见--正在开发中） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作
+注：GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
+
 ![IOTGateConsole](https://images.gitee.com/uploads/images/2019/0331/152228_782eecd5_1038477.png "IOTGateConsole.png")
+更多关于IOTGateConsole的说明请到博客中查看
 ### 联系方式（有问题请发邮件沟通或者直接项目下发留言）
 邮箱：1012702024@qq.com
 
 ### 补充一点说明
-目前重要工作开始进入IOTGateConsole控制台的开发以及文档的编写阶段，文档我会全部写在我自己的博客里面，请大家参阅！谢谢大家的支持！！
+项目相关文档我会全部写在我自己的博客里面，请大家参阅！谢谢大家的支持！！
