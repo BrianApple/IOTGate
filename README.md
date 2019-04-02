@@ -81,6 +81,7 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 注：GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
 
 ![IOTGateConsole](https://images.gitee.com/uploads/images/2019/0331/152228_782eecd5_1038477.png "IOTGateConsole.png")
+![规约维护](https://images.gitee.com/uploads/images/2019/0402/173605_1a4217c0_1038477.png "规约维护.png")
 更多关于IOTGateConsole的说明请到博客中查看
 ### 联系方式（有问题请发邮件沟通或者直接项目下发留言）
 邮箱：1012702024@qq.com
