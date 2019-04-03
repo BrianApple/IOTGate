@@ -70,15 +70,16 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 
 ***
 ### 版本规划
-- IOTGate-v1.0 版本为集群版网关程序，通过命令行参数动态配置网关为单节点或集群  网关与前置通讯时默认轮询方式负载均衡
-- master 基本功能开发完成，已经支持多规约本地配置以及rpc客户端远程开启/关闭/新增/删除网关多规约功能。rpc客户端IOTGateConsole还在开发中
+- IOTGate-v1.0 版本为集群版网关程序，通过命令行参数动态配置网关为单节点或集群（单节点不依赖zookeeper集群）  网关与前置通讯时默认轮询方式负载均衡
+- IOTGate-v2.0 
+- master 基本功能开发完成，已经支持多规约本地配置以及IOTGateConsole远程开启/关闭/新增/删除网关多规约服务功能。后续master会继续扩展相关功能
 ### 关于多规约支持
 物联网虽然火起来，但目前业内还没有比较统一的通讯规约，MQTT是目前业界使用比较广泛的物联网通讯协议了，我看了下阿里最近弄出来的物联网平台其主要也是支持MQTT物联网设备的接入，但他毕竟不是唯一的通讯规约，光我自己知道的通讯都有好几种了，而且每一种规约的报文格式都各不相同，因此，所谓多规约支持，也不可能做到所有物联网规约全支持，我目前的想法是，通过多规约得基础功能和高级功能可以将比较流行物联网规约都能够支持！
 那么IOTGate如何配置实现多规约支持呢？
 请看博客：https://blog.csdn.net/sinat_28771747/article/details/88783309
 ### GATE CLUSTER 结构图
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
-注：GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
+注：GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
 
 ![IOTGateConsole](https://images.gitee.com/uploads/images/2019/0331/152228_782eecd5_1038477.png "IOTGateConsole.png")
 ![规约维护](https://images.gitee.com/uploads/images/2019/0402/173605_1a4217c0_1038477.png "规约维护.png")
