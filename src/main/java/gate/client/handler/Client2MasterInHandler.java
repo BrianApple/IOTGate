@@ -2,6 +2,8 @@ package gate.client.handler;
 
 import java.net.InetSocketAddress;
 
+import java.util.List;
+
 import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
@@ -9,31 +11,30 @@ import gate.util.StringUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 /**
  * 
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月30日
  */
-public class Client2MasterInHandler extends SimpleChannelInboundHandler<ChannelData>{
+@Sharable
+public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 
 	
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, ChannelData msg) throws Exception {
-//		String str=  StringUtils.encodeHex(msg.getSocketData().getLenArea())+StringUtils.encodeHex(msg.getSocketData().getContent());
+	protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 		
-		
-		Channel channel = ClientChannelCache.get(msg.getIpAddress());
-		if(channel != null){
-			
-			int len = msg.getSocketData().getByteBuf().readableBytes();
-			byte[] car =  new byte[len];
-			msg.getSocketData().getByteBuf().readBytes(car);
-			msg.getSocketData().getByteBuf().readerIndex(0);
-			System.out.println("Gate Down = "+StringUtils.encodeHex(car));
-			channel.writeAndFlush(msg);
-			
+		if(msg instanceof List){
+			List<ChannelData> dataList = (List<ChannelData>) msg;
+			for (ChannelData channelData : dataList) {
+				CacheQueue.down2TmnlQueue.put(channelData);
+			}
+		}else{
+			ChannelData channelData = (ChannelData)msg;
+			CacheQueue.down2TmnlQueue.put(channelData);
 		}
+		
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {

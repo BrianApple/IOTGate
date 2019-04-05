@@ -1,6 +1,8 @@
 package gate.server;
 
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import gate.base.cache.ProtocalStrategyCache;
 import gate.codec.Gate2ClientDecoderMulti;
@@ -10,6 +12,7 @@ import gate.codec.other.LengthParser;
 import gate.server.handler.SocketInHandler;
 import gate.util.CommonUtil;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -18,6 +21,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 /**
  * 网关获取终端报文
@@ -33,12 +37,24 @@ public class Server4Terminal {
 	private  String  serverPort;
 	private  EventLoopGroup  boss;
 	private  EventLoopGroup work;
+	private DefaultEventExecutorGroup defaultEventExecutorGroup;
 	
 	public Server4Terminal (String pId,String serverPort){
 		this.pId = pId;
 		this.serverPort = serverPort;
 		this.boss = new NioEventLoopGroup(1);
 		this.work = new NioEventLoopGroup();
+		this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(
+	            Runtime.getRuntime().availableProcessors()*2 ,new ThreadFactory() {
+
+	                private AtomicInteger threadIndex = new AtomicInteger(0);
+
+
+	                @Override
+	                public Thread newThread(Runnable r) {
+	                    return new Thread(r, "NettyServerWorkerThread_" + this.threadIndex.incrementAndGet());
+	                }
+	            });
 	}
 	
 	
@@ -53,12 +69,14 @@ public class Server4Terminal {
 		 .group(boss, work)
 		 .channel(NioServerSocketChannel.class)
 		 .option(ChannelOption.SO_KEEPALIVE, true)
+		 .option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+         .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
 		 .childHandler(new ChannelInitializer<SocketChannel>() {
 
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
 				//心跳检测,超时时间300秒，指定时间中没有读写操作会触发IdleStateEvent事件
-				ch.pipeline().addLast(new IdleStateHandler(0, 0, 300, TimeUnit.SECONDS));
+				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new IdleStateHandler(0, 0, 300, TimeUnit.SECONDS));
 				//自定义编解码器  需要在自定义的handler的前面即pipeline链的前端,不能放在自定义handler后面，否则不起作用
 				ch.pipeline().addLast("decoder",new Gate2ClientDecoderMulti(pId, isBigEndian, beginHexVal,
 						lengthFieldOffset, lengthFieldLength, isDataLenthIncludeLenthFieldLenth, exceptDataLenth));//698长度域表示不包含起始符和结束符长度:1, false, -1, 1, 2, true, 1

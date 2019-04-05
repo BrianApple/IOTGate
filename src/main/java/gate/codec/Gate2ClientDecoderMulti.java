@@ -80,118 +80,122 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 //			}
 			int beginReader;
 			while (true) {
-				// 获取包头开始的index
-				beginReader = in.readerIndex();
-				// 标记包头开始的index
-				in.markReaderIndex();
-				
-				ByteBuf byteBuf = CommonUtil.getDirectByteBuf();
-				
-				if(initialBytesToStrip == 0){
-					byteBuf.writeBytes(in.readBytes(lengthFieldOffset));
+				if(in.readableBytes()>= baseLen){
+					// 获取包头开始的index
+					beginReader = in.readerIndex();
+					// 标记包头开始的index
+	//				in.markReaderIndex();
 					
-					//处理长度域
-					ByteBuf lenAre = in.readBytes(lengthFieldLength);
-					byteBuf.writeBytes(lenAre);
-					lenAre.readerIndex(0);
-					int lenVal = 0;//data域长度
-					switch (lengthFieldLength) {
-					case 1:
-							lenVal = lenAre.readByte() & 0xFF;
-						break;
-					case 2:
-						if(isBigEndian){
-							lenVal = lenAre.readShort();
-						}else{
-							lenVal = lenAre.readShortLE();
-						}
-						break;
-					case 4:
-						if(isBigEndian){
-							lenVal = lenAre.readInt();
-						}else{
-							lenVal = lenAre.readIntLE();
-						}
-						break;
-					default:
-						CommonUtil.releaseByteBuf(byteBuf);
-						break;
-					}
-					if(isDataLenthIncludeLenthFieldLenth){
-						lenVal = lenVal - lengthFieldLength;
-					}
+					ByteBuf byteBuf = CommonUtil.getDirectByteBuf();
 					
-					if(in.readableBytes() >= (lenVal+exceptDataLenth)  && lenVal>0){
-						byteBuf.writeBytes(in.readBytes(lenVal+exceptDataLenth));
-						in.markReaderIndex();
-						Channel channel = ctx.channel();
-						InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-						String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-						String clientIpAddress = ipAddress;
-						SocketData data = new SocketData(byteBuf);
-						data.setpId(pId);
-						ChannelData channelData =  new ChannelData(clientIpAddress, data);
-						out.add(channelData);
-						break;
+					if(initialBytesToStrip == 0){
+						byteBuf.writeBytes(in.readBytes(lengthFieldOffset));
+						
+						//处理长度域
+						ByteBuf lenAre = in.readBytes(lengthFieldLength);
+						byteBuf.writeBytes(lenAre);
+						lenAre.readerIndex(0);
+						int lenVal = 0;//data域长度
+						switch (lengthFieldLength) {
+						case 1:
+								lenVal = lenAre.readByte() & 0xFF;
+							break;
+						case 2:
+							if(isBigEndian){
+								lenVal = lenAre.readShort();
+							}else{
+								lenVal = lenAre.readShortLE();
+							}
+							break;
+						case 4:
+							if(isBigEndian){
+								lenVal = lenAre.readInt();
+							}else{
+								lenVal = lenAre.readIntLE();
+							}
+							break;
+						default:
+							CommonUtil.releaseByteBuf(byteBuf);
+							break;
+						}
+						if(isDataLenthIncludeLenthFieldLenth){
+							lenVal = lenVal - lengthFieldLength;
+						}
+						
+						if(in.readableBytes() >= (lenVal+exceptDataLenth)  && lenVal>0){
+							byteBuf.writeBytes(in.readBytes(lenVal+exceptDataLenth));
+//							in.markReaderIndex();
+							Channel channel = ctx.channel();
+							InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+							String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+							String clientIpAddress = ipAddress;
+							SocketData data = new SocketData(byteBuf);
+							data.setpId(pId);
+							ChannelData channelData =  new ChannelData(clientIpAddress, data);
+							out.add(channelData);
+							continue;
+						}else{
+							//还原
+							in.readerIndex(beginReader+1);
+							CommonUtil.releaseByteBuf(byteBuf);
+							break;
+						}
+						
 					}else{
-						//还原
-						in.readerIndex(beginReader+1);
-						CommonUtil.releaseByteBuf(byteBuf);
-						break;
+						byteBuf.writeBytes(in.readBytes(initialBytesToStrip));
+						byteBuf.writeBytes(in.readBytes(lengthFieldOffset));
+						//处理长度域
+						ByteBuf lenAre = in.readBytes(lengthFieldLength);
+						byteBuf.writeBytes(lenAre);
+						lenAre.readerIndex(0);
+						int lenVal = 0;//data域长度
+						switch (lengthFieldLength) {
+						case 1:
+								lenVal = lenAre.readByte() & 0xFF;
+							break;
+						case 2:
+							if(isBigEndian){
+								lenVal = lenAre.readShort();
+							}else{
+								lenVal = lenAre.readShortLE();
+							}
+							break;
+						case 4:
+							if(isBigEndian){
+								lenVal = lenAre.readInt();
+							}else{
+								lenVal = lenAre.readIntLE();
+							}
+							break;
+						default:
+							CommonUtil.releaseByteBuf(byteBuf);
+							break;
+						}
+						if(isDataLenthIncludeLenthFieldLenth){
+							lenVal = lenVal - lengthFieldLength;
+						}
+						
+						if(in.readableBytes() >= (lenVal+exceptDataLenth) && lenVal>0){
+							byteBuf.writeBytes(in.readBytes(lenVal+exceptDataLenth));
+//							in.markReaderIndex();
+							Channel channel = ctx.channel();
+							InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+							String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+							String clientIpAddress = ipAddress;
+							SocketData data = new SocketData(byteBuf);
+							data.setpId(pId);
+							ChannelData channelData =  new ChannelData(clientIpAddress, data);
+							out.add(channelData);
+							continue;
+						}else{
+							//还原
+							in.readerIndex(beginReader+1);
+							CommonUtil.releaseByteBuf(byteBuf);
+							break;
+						}
 					}
-					
 				}else{
-					byteBuf.writeBytes(in.readBytes(initialBytesToStrip));
-					byteBuf.writeBytes(in.readBytes(lengthFieldOffset));
-					//处理长度域
-					ByteBuf lenAre = in.readBytes(lengthFieldLength);
-					byteBuf.writeBytes(lenAre);
-					lenAre.readerIndex(0);
-					int lenVal = 0;//data域长度
-					switch (lengthFieldLength) {
-					case 1:
-							lenVal = lenAre.readByte() & 0xFF;
-						break;
-					case 2:
-						if(isBigEndian){
-							lenVal = lenAre.readShort();
-						}else{
-							lenVal = lenAre.readShortLE();
-						}
-						break;
-					case 4:
-						if(isBigEndian){
-							lenVal = lenAre.readInt();
-						}else{
-							lenVal = lenAre.readIntLE();
-						}
-						break;
-					default:
-						CommonUtil.releaseByteBuf(byteBuf);
-						break;
-					}
-					if(isDataLenthIncludeLenthFieldLenth){
-						lenVal = lenVal - lengthFieldLength;
-					}
-					
-					if(in.readableBytes() >= (lenVal+exceptDataLenth) && lenVal>0){
-						byteBuf.writeBytes(in.readBytes(lenVal+exceptDataLenth));
-						in.markReaderIndex();
-						Channel channel = ctx.channel();
-						InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-						String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-						String clientIpAddress = ipAddress;
-						SocketData data = new SocketData(byteBuf);
-						data.setpId(pId);
-						ChannelData channelData =  new ChannelData(clientIpAddress, data);
-						out.add(channelData);
-						break;
-					}else{
-						//还原
-						in.readerIndex(beginReader+1);
-						CommonUtil.releaseByteBuf(byteBuf);
-						break;
-					}
+					break;
 				}
 			}
 		}

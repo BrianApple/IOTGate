@@ -16,7 +16,7 @@ public class Cli2MasterLocalCache implements LocalCache{
 	
 	private Cli2MasterLocalCache(){
 		if(inner.cli2MasterLocalCache != null){
-			throw new IllegalStateException("禁止创建gate.cluster.ZKlocalCache对象！");
+			throw new IllegalStateException("禁止创建gate.base.cache.Cli2MasterLocalCache对象！");
 		}
 		client2MasterCache = new ConcurrentHashMap<>();
 	}

@@ -2,10 +2,12 @@ package gate.server.handler;
 
 import java.net.InetSocketAddress;
 
+
+import java.util.List;
+
 import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
-import gate.base.domain.SocketData;
 import gate.util.CommonUtil;
 import gate.util.StringUtils;
 import io.netty.channel.Channel;
@@ -16,12 +18,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.channel.ChannelHandler.Sharable;
 /**
  * 
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月30日
  */
+@Sharable
 public class SocketInHandler extends ChannelInboundHandlerAdapter{
 
 	@Override
@@ -56,13 +60,26 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try{
-			ChannelData channelData = (ChannelData)msg;
-			CacheQueue.up2MasterQueue.put(channelData);
-			int len = channelData.getSocketData().getByteBuf().readableBytes();
-			byte[] car =  new byte[len];
-			channelData.getSocketData().getByteBuf().readBytes(car);
-			channelData.getSocketData().getByteBuf().readerIndex(0);
-			System.out.println("GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+			if(msg instanceof List){
+				List<ChannelData> lists = (List<ChannelData>) msg;
+				for (ChannelData channelData : lists) {
+					CacheQueue.up2MasterQueue.put(channelData);
+					int len = channelData.getSocketData().getByteBuf().readableBytes();
+					byte[] car =  new byte[len];
+					channelData.getSocketData().getByteBuf().readBytes(car);
+					channelData.getSocketData().getByteBuf().readerIndex(0);
+					System.out.println("LIST GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+				}
+			} else{
+				ChannelData channelData = (ChannelData)msg;
+				CacheQueue.up2MasterQueue.put(channelData);
+//				int len = channelData.getSocketData().getByteBuf().readableBytes();
+//				byte[] car =  new byte[len];
+//				channelData.getSocketData().getByteBuf().readBytes(car);
+//				channelData.getSocketData().getByteBuf().readerIndex(0);
+//				System.out.println("UNIT GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+			}
+			
 			
 		}finally{
 			ReferenceCountUtil.release(msg);

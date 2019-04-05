@@ -3,6 +3,8 @@ package gate.client;
 import java.net.Inet4Address;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import gate.base.cache.Cli2MasterLocalCache;
 import gate.base.constant.ConstantValue;
@@ -15,6 +17,7 @@ import gate.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -24,6 +27,7 @@ import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 /**
  * 网关与前置相连的客户端
@@ -36,6 +40,21 @@ public class Client2Master {
 	private Cli2MasterLocalCache cli2MasterLocalCache = Cli2MasterLocalCache.getInstance();
 	private String ip;
 	
+	
+	private DefaultEventExecutorGroup defaultEventExecutorGroup;
+	public Client2Master() {
+		super();
+		this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(//
+				Runtime.getRuntime().availableProcessors()/2 , new ThreadFactory() {
+
+	                private AtomicInteger threadIndex = new AtomicInteger(0);
+
+	                @Override
+	                public Thread newThread(Runnable r) {
+	                    return new Thread(r, "NettyClientWorkerThread_" + this.threadIndex.incrementAndGet());
+	                }
+	            });
+	}
 	public  Bootstrap configClient(){
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.group(worker)
@@ -46,12 +65,13 @@ public class Client2Master {
 		 * 由WRITE_BUFFER_WATER_MARK代替
 		 */
 		.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024))//加上该配置后，网byteBuf写数据前需要判断iswriteble
+		.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
 		.handler(new ChannelInitializer<SocketChannel>() {
 
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
 				//添加控制链
-				ch.pipeline().addLast(new Gate2MasterDecoderMult());
+				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new Gate2MasterDecoderMult());
 				ch.pipeline().addLast(new Gate2MasterEncoderMult());//自定义编解码器
 				ch.pipeline().addLast(new Client2MasterInHandler());
 			}

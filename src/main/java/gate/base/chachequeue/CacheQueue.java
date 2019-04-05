@@ -1,9 +1,13 @@
 package gate.base.chachequeue;
 
 
+import java.util.AbstractQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 import gate.base.domain.ChannelData;
 import io.netty.channel.Channel;
@@ -31,14 +35,17 @@ public class CacheQueue {
 	/**
 	 * Server4Terminel接收到消息之后 将消息存放到up2MasterQueue队列中
 	 */
-	public static LinkedBlockingQueue<ChannelData> up2MasterQueue;
+	public static BlockingQueue<ChannelData> up2MasterQueue;
 	
+	public static BlockingQueue<ChannelData> down2TmnlQueue;
 	static{
 		
 		ipCountRelationCache = new ConcurrentHashMap<String, Integer>();
 		masterChannelCache = new ConcurrentHashMap<String, Channel>();
 		roundCache = new CopyOnWriteArrayList<Channel>();
 		up2MasterQueue = new LinkedBlockingQueue<ChannelData>();
+		down2TmnlQueue = new LinkedBlockingQueue<ChannelData>();
+		
 		System.out.println("GATE 初始化CacheQueue完成......");
 		
 	}

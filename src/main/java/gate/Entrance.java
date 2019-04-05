@@ -1,6 +1,7 @@
 package gate;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -20,9 +23,11 @@ import gate.base.cache.ProtocalStrategyCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.client.Client2Master;
 import gate.cluster.ZKFramework;
+import gate.concurrent.ThreadFactoryImpl;
 import gate.rpc.rpcProcessor.RPCProcessor;
 import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import gate.server.Server4Terminal;
+import gate.threadWorkers.MClient2Tmnl;
 import gate.threadWorkers.TServer2MClient;
 import gate.util.CommonUtil;
 /**
@@ -151,10 +156,17 @@ public class Entrance {
 	 */
 	public static  void initEnvriment(){
 		
-		ExecutorService exService = Executors.newFixedThreadPool(1);
 		
-		//初始化  网关终端端 --->  网关前置端   搬运数据线程
-		exService.execute(new TServer2MClient(CacheQueue.up2MasterQueue));
+		//初始化数据中转线程
+		try {
+			new TServer2MClient(CacheQueue.up2MasterQueue,2).start();
+			new MClient2Tmnl(CacheQueue.down2TmnlQueue, 2).start();
+		} catch (Exception e) {
+			System.err.println("数据中转线程启动失败");
+			e.printStackTrace();
+			System.exit(-1);
+		};
+		
 	}
 	/**
 	 * JVM的关闭钩子--JVM正常关闭才会执行
