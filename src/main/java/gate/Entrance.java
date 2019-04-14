@@ -102,10 +102,6 @@ public class Entrance {
 			ProtocalStrategyCache.protocalStrategyCache.put(pid, pts);
 		}		
 		
-		
-		
-		
-		
 		try {
 			processor.exportService();
 		} catch (Exception e) {
@@ -159,8 +155,8 @@ public class Entrance {
 		
 		//初始化数据中转线程
 		try {
-			new TServer2MClient(CacheQueue.up2MasterQueue,2).start();
-			new MClient2Tmnl(CacheQueue.down2TmnlQueue, 2).start();
+			new TServer2MClient(CacheQueue.up2MasterQueue,1).start();
+			new MClient2Tmnl(CacheQueue.down2TmnlQueue, 1).start();
 		} catch (Exception e) {
 			System.err.println("数据中转线程启动失败");
 			e.printStackTrace();

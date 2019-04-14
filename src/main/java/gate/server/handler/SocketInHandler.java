@@ -64,20 +64,20 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 				List<ChannelData> lists = (List<ChannelData>) msg;
 				for (ChannelData channelData : lists) {
 					CacheQueue.up2MasterQueue.put(channelData);
-					int len = channelData.getSocketData().getByteBuf().readableBytes();
-					byte[] car =  new byte[len];
-					channelData.getSocketData().getByteBuf().readBytes(car);
-					channelData.getSocketData().getByteBuf().readerIndex(0);
-					System.out.println("LIST GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+//					int len = channelData.getSocketData().getByteBuf().readableBytes();
+//					byte[] car =  new byte[len];
+//					channelData.getSocketData().getByteBuf().readBytes(car);
+//					channelData.getSocketData().getByteBuf().readerIndex(0);
+//					System.out.println("LIST GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
 				}
 			} else{
 				ChannelData channelData = (ChannelData)msg;
 				CacheQueue.up2MasterQueue.put(channelData);
-//				int len = channelData.getSocketData().getByteBuf().readableBytes();
-//				byte[] car =  new byte[len];
-//				channelData.getSocketData().getByteBuf().readBytes(car);
-//				channelData.getSocketData().getByteBuf().readerIndex(0);
-//				System.out.println("UNIT GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+				int len = channelData.getSocketData().getByteBuf().readableBytes();
+				byte[] car =  new byte[len];
+				channelData.getSocketData().getByteBuf().readBytes(car);
+				channelData.getSocketData().getByteBuf().readerIndex(0);
+				System.out.println("UNIT GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
 			}
 			
 			

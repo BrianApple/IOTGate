@@ -34,12 +34,30 @@ public class CommonUtil {
 	 */
 	public static AtomicInteger recieveCount ;
 	
+	public static final String OS_NAME = System.getProperty("os.name");
+
+    private static boolean isLinuxPlatform = false;
+    private static boolean isWindowsPlatform = false;
+	
 	static{
 		recieveCount = new AtomicInteger(0);
-		recieveCount = new AtomicInteger(0);
 		allocator = PooledByteBufAllocator.DEFAULT;
+		if (OS_NAME != null && OS_NAME.toLowerCase().indexOf("linux") >= 0) {
+            isLinuxPlatform = true;
+        }
+        if (OS_NAME != null && OS_NAME.toLowerCase().indexOf("windows") >= 0) {
+            isWindowsPlatform = true;
+        }
 	}
 	
+	public static boolean isLinuxPlatform() {
+        return isLinuxPlatform;
+    }
+
+
+    public static boolean isWindowsPlatform() {
+        return isWindowsPlatform;
+    }
 	
 	/**
 	 * 从直接内存池中获取ByteBuf

@@ -1,6 +1,7 @@
 package gate.codec;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 import gate.base.constant.ConstantValue;
@@ -12,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.internal.RecyclableArrayList;
 /**
  * 长度域定长多规约解码器
  * @Description: 
@@ -79,6 +81,7 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 //				
 //			}
 			int beginReader;
+			RecyclableArrayList arrayList = RecyclableArrayList.newInstance();
 			while (true) {
 				if(in.readableBytes()>= baseLen){
 					// 获取包头开始的index
@@ -132,7 +135,7 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 							SocketData data = new SocketData(byteBuf);
 							data.setpId(pId);
 							ChannelData channelData =  new ChannelData(clientIpAddress, data);
-							out.add(channelData);
+							arrayList.add(channelData);
 							continue;
 						}else{
 							//还原
@@ -185,7 +188,7 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 							SocketData data = new SocketData(byteBuf);
 							data.setpId(pId);
 							ChannelData channelData =  new ChannelData(clientIpAddress, data);
-							out.add(channelData);
+							arrayList.add(channelData);
 							continue;
 						}else{
 							//还原
@@ -195,6 +198,17 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 						}
 					}
 				}else{
+					int size = arrayList.size();
+					if(size == 1){
+						out.add(arrayList.get(0));
+					}else if(size > 1){
+						ArrayList<Object> arrayList2 = new ArrayList<>(size);
+						for (int i = 0; i < size; i++) {
+							arrayList2.add(arrayList.get(i));
+						}
+						out.add(arrayList2);
+					}
+					arrayList.recycle();
 					break;
 				}
 			}
