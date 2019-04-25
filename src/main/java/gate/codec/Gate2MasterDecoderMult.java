@@ -78,7 +78,7 @@ public class Gate2MasterDecoderMult  extends ByteToMessageDecoder{
 								}
 							}
 							clientIpAddress.append("|");
-							clientIpAddress.append(readLenArea(in));
+							clientIpAddress.append(in.readShortLE() & 0xFFFF);
 							
 							in.skipBytes(4);//连接次数
 							SocketData data = new SocketData(in.readBytes(socketDataLen));
@@ -161,7 +161,8 @@ public class Gate2MasterDecoderMult  extends ByteToMessageDecoder{
 								}
 							}
 							clientIpAddress.append("|");
-							clientIpAddress.append(readLenArea(in));
+//							clientIpAddress.append(readLenArea(in));
+							clientIpAddress.append(in.readShortLE() & 0xFFFF);
 							
 							in.skipBytes(4);//连接次数
 							SocketData data = new SocketData(in.readBytes(socketDataLen));
