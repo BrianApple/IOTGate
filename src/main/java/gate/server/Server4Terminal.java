@@ -1,14 +1,13 @@
 package gate.server;
 
 import java.util.concurrent.ThreadFactory;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import gate.base.cache.ProtocalStrategyCache;
 import gate.codec.Gate2ClientDecoderMulti;
 import gate.codec.Gate2ClientEncoderMulti;
-import gate.codec.other.DynamicGate2ClientDecoderMulti;
-import gate.codec.other.LengthParser;
 import gate.server.handler.SocketInHandler;
 import gate.util.CommonUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -88,40 +87,7 @@ public class Server4Terminal {
 		 
 		return serverBootstrap;
 	}
-	/**
-	 * 高级功能支持--上传动态代码
-	 * @param pId
-	 * @param isBigEndian
-	 * @param beginHexVal
-	 * @param lengthFieldOffset
-	 * @param isDataLenthIncludeLenthFieldLenth
-	 * @param exceptDataLenth
-	 * @param lengthParser
-	 * @return
-	 */
-	public  ServerBootstrap config2(int pId, boolean isBigEndian, int beginHexVal, int lengthFieldOffset,
-			boolean isDataLenthIncludeLenthFieldLenth, int exceptDataLenth , LengthParser lengthParser){
-		 ServerBootstrap serverBootstrap = new ServerBootstrap();
-		 serverBootstrap
-		 .group(boss, work)
-		 .channel(NioServerSocketChannel.class)
-		 .option(ChannelOption.SO_KEEPALIVE, true)
-		 .childHandler(new ChannelInitializer<SocketChannel>() {
 
-			@Override
-			protected void initChannel(SocketChannel ch) throws Exception {
-				//心跳检测,超时时间300秒，指定时间中没有读写操作会触发IdleStateEvent事件
-				ch.pipeline().addLast(new IdleStateHandler(0, 0, 300, TimeUnit.SECONDS));
-				//自定义编解码器  需要在自定义的handler的前面即pipeline链的前端,不能放在自定义handler后面，否则不起作用
-				ch.pipeline().addLast("decoder",new DynamicGate2ClientDecoderMulti(pId, isBigEndian, beginHexVal, lengthFieldOffset,
-						isDataLenthIncludeLenthFieldLenth, exceptDataLenth, 0, lengthParser));//698长度域表示不包含起始符和结束符长度:1, false, -1, 1, 2, true, 1
-				ch.pipeline().addLast("encoder",new Gate2ClientEncoderMulti());
-				ch.pipeline().addLast(new SocketInHandler());
-			}
-		});
-		 
-		return serverBootstrap;
-	}
 	
 	
 	/**

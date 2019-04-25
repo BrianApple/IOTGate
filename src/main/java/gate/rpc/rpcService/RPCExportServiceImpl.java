@@ -1,6 +1,7 @@
 package gate.rpc.rpcService;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import gate.base.cache.ProtocalStrategyCache;
-import gate.codec.other.LengthParser;
 import gate.rpc.annotation.RPCService;
 import gate.rpc.dataBridge.ResponseData;
 import gate.server.Server4Terminal;
@@ -159,32 +159,6 @@ public class RPCExportServiceImpl implements RPCExportService{
 				},"gate2tmnlThread_pid_"+pid).start();
 			}else{
 				//TODO 高级功能模块   自定义解析器实现
-				String className = ProtocalStrategyCache.protocalStrategyClassUrlCache.get(pid);
-				try {
-					Class<?> clazz = new FileSystemClassLoader(System.getProperty("BasicDir")).loadClass(className);
-					LengthParser parser = (LengthParser) clazz.newInstance();
-
-					String pts = ProtocalStrategyCache.protocalStrategyCache.get(pid);
-					new Thread(new Runnable() {
-						public void run() {
-							
-							String[] pt = pts.split("\\,");
-							boolean isBigEndian = "0".equals(pt[1]) ? false : true;
-							boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[4]) ? false : true;
-							System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s", Integer.parseInt(pt[0]),Integer.parseInt(pt[6])));
-							Server4Terminal server4Terminal = new Server4Terminal(pt[0],pt[6]);
-							server4Terminal.bindAddress(server4Terminal.config2(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
-									Integer.parseInt(pt[3]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[5]),parser));
-							
-						}
-					},"gate2tmnlThread_pid_"+pid).start();
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-					responseData.setReturnCode(500);
-					responseData.setErroInfo(e);
-					return responseData;
-				}
 				
 			}
 			
@@ -217,26 +191,5 @@ public class RPCExportServiceImpl implements RPCExportService{
 		String str = ProtocalStrategyCache.protocalStrategyClassUrlCache.get(pid);
 		return str != null;
 	}
-	
-	
-	/**
-	 * 创建指定对象
-	 * @return 全类名
-	 * @throws Exception
-	 */
-	public static String makeClass(String pid , String methodContent) throws Exception{
-		ClassPool pool = ClassPool.getDefault();
-		String newClassName = "iotGate.strategy.Strategy"+pid;
-		CtClass clazz=pool.get("gate.codec.other.LengthParserImpl");
-		clazz.setName(newClassName);
-		
-		CtMethod method = clazz.getDeclaredMethod("parseLength", new CtClass[]{pool.get("io.netty.buffer.ByteBuf"),pool.get("java.util.ArrayList")});
-		//在方法体之前增加输出
-		method.insertAfter("System.out.println(\"start....\"); "+ methodContent );
-		
-		clazz.writeFile(System.getProperty("BasicDir"));
-		return newClassName;
-	}
-	
 
 }

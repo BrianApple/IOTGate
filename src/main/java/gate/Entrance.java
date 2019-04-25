@@ -64,7 +64,6 @@ public class Entrance {
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							System.out.println(String.format("！！！前置服务%s连接成功,前置端口必须为8888", addr));
 							Client2Master client2Master = new Client2Master();
 							client2Master.bindAddress2Client(client2Master.configClient(),addr,8888);
 							
