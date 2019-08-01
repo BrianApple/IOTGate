@@ -69,6 +69,7 @@ public class Entrance {
 							
 						} catch (Exception e) {
 							e.printStackTrace();
+							System.exit(-1);
 						}
 					}
 				},"gate2masterThread_ip_"+addr).start();
