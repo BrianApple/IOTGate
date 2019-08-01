@@ -1,5 +1,6 @@
 #!/bin/sh
 #守护进程脚本，当网关异常关闭时主动重启网关
+#建议直接通过该脚本启动网关！
 #author:杨承
 #网关编号
 NUM=1
@@ -28,17 +29,17 @@ function start {
                command=`nohup java $JVM -jar $BASE_DIR/IOTGate.jar -n $NUM -f $BASE_DIR/iotGate.conf -m $MASTERIP  > $BASE_DIR/$LOGNAME.log &`
                 `info $command`
         fi
-        tail -10f $BASE_DIR/$LOGNAME.log
+        tail -n 30  $BASE_DIR/$LOGNAME.log
 }
 
 
 for((i=0 ; ; i++))
 do
+  sleep 1
   server=`ps aux | grep IOTGate.jar | grep -v grep`
         if [ ! "$server" ]; then
             #如果不存在就启动
             start
-            sleep 1
         fi
         sleep 1
 done
