@@ -45,7 +45,7 @@ public class Client2Master {
 	public Client2Master() {
 		super();
 		this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(//
-				Runtime.getRuntime().availableProcessors()/2 , new ThreadFactory() {
+				Runtime.getRuntime().availableProcessors() , new ThreadFactory() {
 
 	                private AtomicInteger threadIndex = new AtomicInteger(0);
 
