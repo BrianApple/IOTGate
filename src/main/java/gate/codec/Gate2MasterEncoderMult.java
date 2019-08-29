@@ -50,7 +50,7 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		if(ipAddress.split("\\|")[0].contains(".")){
 			headBuf.writeInt8((byte)data.getpId());//protocolType
 		}else{
-			headBuf.writeInt8(Integer.valueOf(0+(1<<7)).byteValue());//protocolType
+			headBuf.writeInt8(Integer.valueOf(data.getpId()+(1<<7)).byteValue());//protocolType
 		}
 		
 		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
