@@ -65,7 +65,7 @@ public class Entrance {
 					public void run() {
 						try {
 							Client2Master client2Master = new Client2Master();
-							client2Master.bindAddress2Client(client2Master.configClient(),addr,8888);
+							client2Master.bindAddress2Client(client2Master.configClient(addr,8888,true));
 							
 						} catch (Exception e) {
 							e.printStackTrace();

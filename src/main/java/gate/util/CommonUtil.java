@@ -12,6 +12,7 @@ import org.apache.commons.cli.ParseException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.EventLoopGroup;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.ReferenceCountUtil;
 /**
  * 
@@ -33,6 +34,9 @@ public class CommonUtil {
 	 * 计数
 	 */
 	public static AtomicInteger recieveCount ;
+	
+	public static HashedWheelTimer wheelTimer = new HashedWheelTimer() ;
+	
 	
 	public static final String OS_NAME = System.getProperty("os.name");
 

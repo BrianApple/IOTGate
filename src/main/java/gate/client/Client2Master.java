@@ -10,16 +10,18 @@ import gate.base.cache.Cli2MasterLocalCache;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.GateHeader;
 import gate.client.handler.Client2MasterInHandler;
+import gate.client.handler.IOTGateWacthDog;
 import gate.codec.Gate2MasterDecoderMult;
 import gate.codec.Gate2MasterEncoderMult;
 import gate.util.CommonUtil;
 import gate.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -39,6 +41,7 @@ public class Client2Master {
 	private  EventLoopGroup worker = new NioEventLoopGroup();
 	private Cli2MasterLocalCache cli2MasterLocalCache = Cli2MasterLocalCache.getInstance();
 	private String ip;
+	private int port;
 	
 	
 	private DefaultEventExecutorGroup defaultEventExecutorGroup;
@@ -55,7 +58,9 @@ public class Client2Master {
 	                }
 	            });
 	}
-	public  Bootstrap configClient(){
+	public  Bootstrap configClient(String ip ,int port,boolean isOpenWatchDog){
+		this.ip = ip;
+		this.port = port;
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.group(worker)
 		.channel(NioSocketChannel.class)
@@ -70,10 +75,23 @@ public class Client2Master {
 
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
-				//添加控制链
-				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new Gate2MasterDecoderMult());
-				ch.pipeline().addLast(new Gate2MasterEncoderMult());//自定义编解码器
-				ch.pipeline().addLast(new Client2MasterInHandler());
+				ch.pipeline().addLast(new IOTGateWacthDog(bootstrap, ip, port, CommonUtil.wheelTimer, isOpenWatchDog) {
+					
+					@Override
+					public ChannelHandler[] getChannelHandlers() {
+						return new ChannelHandler[]{
+								this,
+								new Gate2MasterDecoderMult(),
+								new Gate2MasterEncoderMult(),
+								new Client2MasterInHandler()
+						};
+					}
+					@Override
+					protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+						ctx.fireChannelRead(msg);
+						
+					}
+				}.getChannelHandlers());
 			}
 			
 		});
@@ -86,9 +104,9 @@ public class Client2Master {
 	 * @param port
 	 * @throws Exception 
 	 */
-	public void bindAddress2Client(Bootstrap bootstrap,String ip, int port) throws Exception{
+	public void bindAddress2Client(Bootstrap bootstrap) throws Exception{
 		cli2MasterLocalCache.set(ip, this);
-		this.ip = ip;
+		
 		ChannelFuture channelFuture=bootstrap.connect(ip, port).sync();
 		
 		/**
