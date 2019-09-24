@@ -70,7 +70,7 @@ public class moniMaster {
 		
 		
 		
-		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
+		/*RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
 		CuratorFramework cf = CuratorFrameworkFactory.builder()
 					.connectString(zkAddr)
 					.sessionTimeoutMs(6000)
@@ -95,7 +95,7 @@ public class moniMaster {
 			System.out.println("********zookeeper注册前置信息成功！********");
 		} catch (Exception e) {
 			System.err.println("zookeeper注册前置信息失败");
-		}
+		}*/
 		
 	}
 }
