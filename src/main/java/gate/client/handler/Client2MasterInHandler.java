@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 
 import java.util.List;
 
-import gate.base.cache.ClientChannelCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
 import gate.util.StringUtils;
@@ -58,10 +57,11 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 		 */
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-		String masterIP = ipAddress;
-		CacheQueue.removeMasterChannelFromLocalCache(masterIP);
-		
+		if(insocket!= null){
+			String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+			String masterIP = ipAddress;
+			CacheQueue.removeMasterChannelFromLocalCache(masterIP);
+		}
 	}
 
 	@Override
