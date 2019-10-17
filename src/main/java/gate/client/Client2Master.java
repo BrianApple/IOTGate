@@ -80,9 +80,10 @@ public class Client2Master {
 					@Override
 					public ChannelHandler[] getChannelHandlers() {
 						return new ChannelHandler[]{
-								this,
+								
 								new Gate2MasterDecoderMult(),
 								new Gate2MasterEncoderMult(),
+								this,
 								new Client2MasterInHandler()
 						};
 					}
