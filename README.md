@@ -76,6 +76,8 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 物联网虽然火起来，但目前业内还没有比较统一的通讯规约，MQTT是目前业界使用比较广泛的物联网通讯协议了，我看了下阿里最近弄出来的物联网平台其主要也是支持MQTT物联网设备的接入，但他毕竟不是唯一的通讯规约，光我自己知道的通讯都有好几种了，而且每一种规约的报文格式都各不相同，因此，所谓多规约支持，也不可能做到所有物联网规约全支持，我目前的想法是，通过多规约得基础功能和高级功能可以将比较流行物联网规约都能够支持！
 那么IOTGate如何配置实现多规约支持呢？
 IOTGate操作指南
+### IOTGate功能架构图
+![IOTGate开源版功能架构图](https://images.gitee.com/uploads/images/2019/1019/191425_eac2830b_1038477.jpeg "IOTGate开源版设计图模.jpg")
 ### GATE CLUSTER 结构图
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
 注：GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
