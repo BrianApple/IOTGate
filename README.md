@@ -9,6 +9,13 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 	Entrance.java
 ### IOTGate操作指南
 	http://www.xianglong.work/tag/IOTGate%E6%99%BA%E8%83%BD%E7%BD%91%E5%85%B3
+### IOTGate在线演示
+	http://122.51.117.100:8686/
+
+用户名密码随意输入：
+![输入图片说明](https://images.gitee.com/uploads/images/2019/1025/220245_3ff17bcc_1038477.png "屏幕截图.png")
+如果跳转报错则重新在地址栏输入http://122.51.117.100:8686/即可正常访问
+
 ### 命令行参数说明
 
 |      参数      | 是否必选 |是否含参| 含义 |
