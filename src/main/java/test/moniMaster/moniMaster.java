@@ -26,7 +26,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class moniMaster {
 	public static void main(String[] args) {
 		
-		String zkAddr = "192.168.18.27:2181,192.168.18.27:2182,192.168.18.27:2183";
+		String zkAddr = "172.17.0.12:2181,172.17.0.12:2182,172.17.0.12:2183";
 		
 		EventLoopGroup boss=new NioEventLoopGroup();
 		EventLoopGroup work=new NioEventLoopGroup();
@@ -70,7 +70,7 @@ public class moniMaster {
 		
 		
 		
-		/*RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
+		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
 		CuratorFramework cf = CuratorFrameworkFactory.builder()
 					.connectString(zkAddr)
 					.sessionTimeoutMs(6000)
@@ -95,7 +95,7 @@ public class moniMaster {
 			System.out.println("********zookeeper注册前置信息成功！********");
 		} catch (Exception e) {
 			System.err.println("zookeeper注册前置信息失败");
-		}*/
+		}
 		
 	}
 }
