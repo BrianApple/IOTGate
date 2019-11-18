@@ -68,34 +68,34 @@ public class moniMaster {
 		
 		
 		
+		//如果使用单机版请注掉下面的代码，则模拟前置不会继续连接zookeeper
 		
-		
-		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
-		CuratorFramework cf = CuratorFrameworkFactory.builder()
-					.connectString(zkAddr)
-					.sessionTimeoutMs(6000)
-					.retryPolicy(retryPolicy)
-					.build();
-		System.out.println("zk连接中。。。。。。");
-		//3 开启连接
-		cf.start();
-		while(cf.getState() != CuratorFrameworkState.STARTED){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		System.out.println("zk连接成功。。。。。");
-		
-		
-		try {
-			String addr = MixAll.linuxLocalIP();
-			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/iotGate2Master/"+addr,addr.getBytes());
-			System.out.println("********zookeeper注册前置信息成功！********");
-		} catch (Exception e) {
-			System.err.println("zookeeper注册前置信息失败");
-		}
+//		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
+//		CuratorFramework cf = CuratorFrameworkFactory.builder()
+//					.connectString(zkAddr)
+//					.sessionTimeoutMs(6000)
+//					.retryPolicy(retryPolicy)
+//					.build();
+//		System.out.println("zk连接中。。。。。。");
+//		//3 开启连接
+//		cf.start();
+//		while(cf.getState() != CuratorFrameworkState.STARTED){
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		System.out.println("zk连接成功。。。。。");
+//		
+//		
+//		try {
+//			String addr = MixAll.linuxLocalIP();
+//			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/iotGate2Master/"+addr,addr.getBytes());
+//			System.out.println("********zookeeper注册前置信息成功！********");
+//		} catch (Exception e) {
+//			System.err.println("zookeeper注册前置信息失败");
+//		}
 		
 	}
 }

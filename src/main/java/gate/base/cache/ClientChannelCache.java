@@ -62,7 +62,8 @@ public class ClientChannelCache {
 	
 	public static void removeOne(String key){
 		
-		getCacheInstance(key).remove(key);
+		Channel channel = getCacheInstance(key).remove(key);
+		channel.closeFuture();
 //		logOut("删除数据");
 	}
 	/**
