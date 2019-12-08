@@ -11,6 +11,8 @@ import org.apache.commons.cli.ParseException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.ReferenceCountUtil;
@@ -27,9 +29,9 @@ public class CommonUtil {
 	public static int gateNum ;
 	
 	/**
-	 * 使用池化的直接内存ByteBuf
+	 * 使用堆内存ByteBuf，减少对外内存使用，便于通过gc垃圾回收
 	 */
-	private static PooledByteBufAllocator allocator;
+	private static UnpooledByteBufAllocator allocator;
 	/**
 	 * 计数
 	 */
@@ -45,7 +47,7 @@ public class CommonUtil {
 	
 	static{
 		recieveCount = new AtomicInteger(0);
-		allocator = PooledByteBufAllocator.DEFAULT;
+		allocator = UnpooledByteBufAllocator.DEFAULT;
 		if (OS_NAME != null && OS_NAME.toLowerCase().indexOf("linux") >= 0) {
             isLinuxPlatform = true;
         }
@@ -67,8 +69,9 @@ public class CommonUtil {
 	 * 从直接内存池中获取ByteBuf
 	 * @return
 	 */
-	public static ByteBuf getDirectByteBuf(){
-		return allocator.buffer();
+	public static ByteBuf getByteBuf(){
+				
+		return allocator.heapBuffer();
 	}
 	
 	/**

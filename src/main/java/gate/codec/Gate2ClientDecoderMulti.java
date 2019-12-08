@@ -89,15 +89,15 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 					// 标记包头开始的index
 	//				in.markReaderIndex();
 					
-					ByteBuf byteBuf = CommonUtil.getDirectByteBuf();
+					ByteBuf byteBuf = CommonUtil.getByteBuf();
 					
 					if(initialBytesToStrip == 0){
-						byteBuf.writeBytes(in.readBytes(lengthFieldOffset));
+						for(int i = 0 ; i < lengthFieldOffset ; i++){
+							byteBuf.writeByte(in.readByte());
+						}
 						
 						//处理长度域
 						ByteBuf lenAre = in.readBytes(lengthFieldLength);
-						byteBuf.writeBytes(lenAre);
-						lenAre.readerIndex(0);
 						int lenVal = 0;//data域长度
 						switch (lengthFieldLength) {
 						case 1:
@@ -121,12 +121,16 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 							CommonUtil.releaseByteBuf(byteBuf);
 							break;
 						}
+						lenAre.readerIndex(0);
+						byteBuf.writeBytes(lenAre);
 						if(isDataLenthIncludeLenthFieldLenth){
 							lenVal = lenVal - lengthFieldLength;
 						}
 						
 						if(in.readableBytes() >= (lenVal+exceptDataLenth)  && lenVal>0){
-							byteBuf.writeBytes(in.readBytes(lenVal+exceptDataLenth));
+							for(int i = 0 ; i < (lenVal+exceptDataLenth) ; i++ ){
+								byteBuf.writeByte(in.readByte());
+							}
 //							in.markReaderIndex();
 							Channel channel = ctx.channel();
 							InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
@@ -145,12 +149,15 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 						}
 						
 					}else{
-						byteBuf.writeBytes(in.readBytes(initialBytesToStrip));
-						byteBuf.writeBytes(in.readBytes(lengthFieldOffset));
+						for(int i = 0 ; i < (initialBytesToStrip) ; i++ ){
+							byteBuf.writeByte(in.readByte());
+						}
+						for(int i = 0 ; i < (lengthFieldOffset) ; i++ ){
+							byteBuf.writeByte(in.readByte());
+						}
 						//处理长度域
 						ByteBuf lenAre = in.readBytes(lengthFieldLength);
-						byteBuf.writeBytes(lenAre);
-						lenAre.readerIndex(0);
+						
 						int lenVal = 0;//data域长度
 						switch (lengthFieldLength) {
 						case 1:
@@ -174,13 +181,16 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 							CommonUtil.releaseByteBuf(byteBuf);
 							break;
 						}
+						lenAre.readerIndex(0);
+						byteBuf.writeBytes(lenAre);
 						if(isDataLenthIncludeLenthFieldLenth){
 							lenVal = lenVal - lengthFieldLength;
 						}
 						
 						if(in.readableBytes() >= (lenVal+exceptDataLenth) && lenVal>0){
-							byteBuf.writeBytes(in.readBytes(lenVal+exceptDataLenth));
-//							in.markReaderIndex();
+							for(int i = 0 ; i < (lenVal+exceptDataLenth) ; i++ ){
+								byteBuf.writeByte(in.readByte());
+							}
 							Channel channel = ctx.channel();
 							InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
 							String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));

@@ -132,7 +132,7 @@ public class Client2Master {
 		/**
 		 * 创建直接内存形式的ByteBuf，不能使用array()方法，但效率高
 		 */
-		ByteBuf out = CommonUtil.getDirectByteBuf();
+		ByteBuf out = CommonUtil.getByteBuf();
 //		PooledByteBufAllocator allocator = PooledByteBufAllocator.DEFAULT;
 //		ByteBuf out = allocator.buffer();
 		String ipAddress = LocalIpAddress;

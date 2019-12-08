@@ -73,7 +73,7 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port
 		headBuf.writeInt32(count);//count
 
-		ByteBuf outData = CommonUtil.getDirectByteBuf();
+		ByteBuf outData = CommonUtil.getByteBuf();
 		outData.writeBytes(headBuf.getDataBuffer());
 		//真实报文
 		outData.writeBytes(cliDataBuf);

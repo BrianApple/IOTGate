@@ -29,6 +29,7 @@ import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import gate.server.Server4Terminal;
 import gate.threadWorkers.MClient2Tmnl;
 import gate.threadWorkers.TServer2MClient;
+import gate.util.BannerUtil;
 import gate.util.CommonUtil;
 /**
  * 入口
@@ -48,6 +49,7 @@ public class Entrance {
 	public static void main(String[] args) {
 		
 		boolean isCluster = suitCommonLine(args);
+		BannerUtil.info();
 		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");
 		initEnvriment();
 		if(isCluster){
@@ -108,6 +110,7 @@ public class Entrance {
 			e.printStackTrace();
 			System.err.println("rpc服务发布失败...............");
 		}
+		
 		addHook();
 	}
 	

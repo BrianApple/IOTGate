@@ -48,7 +48,7 @@ public class moniTerminal {
 		
 				ChannelFuture channelFuture=bootstrap.connect("127.0.0.1", port).sync();
 				for(int i = 0; i<1 ; i++){
-					Thread.sleep(1000);
+//					Thread.sleep(1000);
 //					if(i % 2 == 0){
 //						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
 //						
@@ -66,7 +66,7 @@ public class moniTerminal {
 						 * 规约类型3
 						 * 684A004A006800114155000000E3000001002342161526044516
 						 */
-//						byte[] data = StringUtils.decodeHex("684A004A006800114155000000E3000001002342161526044516");
+//						byte[] data = StringUtils.decodeHex("40 40 00 00 02 03 37 1A 0C 1A 0A 12 4E 01 00 00 09 FF 00 00 00 00 00 00 0A 00 02 08 01 00 00 36 1A 0C 1A 0A 12 96 23 23".replaceAll(" ", ""));
 						channelFuture.channel().writeAndFlush(Unpooled.wrappedBuffer(data));
 						
 						
