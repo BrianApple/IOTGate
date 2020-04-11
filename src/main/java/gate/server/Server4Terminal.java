@@ -62,7 +62,7 @@ public class Server4Terminal {
 	 * @return
 	 */
 	public  ServerBootstrap config(int pId, boolean isBigEndian, int beginHexVal, int lengthFieldOffset, int lengthFieldLength,
-			boolean isDataLenthIncludeLenthFieldLenth, int exceptDataLenth){
+			boolean isDataLenthIncludeLenthFieldLenth, int exceptDataLenth ,int heartbeat){
 		 ServerBootstrap serverBootstrap = new ServerBootstrap();
 		 serverBootstrap
 		 .group(boss, work)
@@ -76,7 +76,7 @@ public class Server4Terminal {
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
 				//心跳检测,超时时间300秒，指定时间中没有读写操作会触发IdleStateEvent事件
-				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new IdleStateHandler(0, 0, 300, TimeUnit.SECONDS));
+				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new IdleStateHandler(0, 0, heartbeat, TimeUnit.SECONDS));
 				//自定义编解码器  需要在自定义的handler的前面即pipeline链的前端,不能放在自定义handler后面，否则不起作用
 				ch.pipeline().addLast("decoder",new Gate2ClientDecoderMulti(pId, isBigEndian, beginHexVal,
 						lengthFieldOffset, lengthFieldLength, isDataLenthIncludeLenthFieldLenth, exceptDataLenth));//698长度域表示不包含起始符和结束符长度:1, false, -1, 1, 2, true, 1
