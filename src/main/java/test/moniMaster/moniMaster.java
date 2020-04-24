@@ -19,7 +19,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
- * 模拟 前置
+ * 模拟 模拟前置
+ * 前置（规约解析服务）是翻译和编码报文的实际处理者
  * @author BriansPC
  *
  */
