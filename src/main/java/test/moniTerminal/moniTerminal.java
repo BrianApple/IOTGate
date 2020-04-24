@@ -16,7 +16,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import test.CountHelper;
 
 /**
- * 客户端
+ * 客户端--未处理粘包，因此在大量模拟数据的时候，接收的响应数据会产生粘包问题
  * @author yangcheng
  * @date 2017年12月29日 
  * @version V1.0
