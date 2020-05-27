@@ -1,5 +1,8 @@
-
-
+### IOTGate开源版演示地址
+	http://122.51.117.100:8686/
+### 浩欣物联平台（含HXAPIGate企业版、牧羊犬多规约前置、IOTGate企业版）
+        https://uiotcp.xianglong.work      账号 guest001  密码 123456
+        功能架构：https://www.xianglong.work/blog/24
 ## 通过netty实现自定义协议物联网网关（单机和集群版）
 window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒处理并发心跳6000+（根据jmeter本地最新压测统计数据），20W在线终端(长连接保持)内存占用量1G左右
 ## 请认真阅读项目的readme文档以及项目操作指南博客！！！  项目的基本信息请自己阅读理解，很多同学进群之后问的问题全在博客中有说明，网关本身不支持规约解析，如果需要规约动态解析前置，请联系项目作者（有偿提供！），谢谢！
@@ -10,8 +13,7 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 	Entrance.java
 ### IOTGate操作指南
 	http://www.xianglong.work/tag/IOTGate%E6%99%BA%E8%83%BD%E7%BD%91%E5%85%B3
-### IOTGate在线演示
-	http://122.51.117.100:8686/
+
 
 用户名密码随意输入：
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1025/220245_3ff17bcc_1038477.png "屏幕截图.png")
