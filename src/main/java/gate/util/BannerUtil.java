@@ -3,7 +3,7 @@ package gate.util;
  * banner工具类
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2019</p>
- * <p>Company: www.uiotcp.com</p>
+ * <p>Company: www.xianglong.work</p>
  * @author yangcheng
  * @date 2019年12月8日
  * @version 1.0
