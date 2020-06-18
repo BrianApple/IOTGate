@@ -151,7 +151,6 @@ public class CommonUtil {
 	            commandLine = parser.parse(options, args);
 	            if (commandLine.hasOption('h')) {
 	                hf.printHelp(appName, options, true);
-	                System.out.println("-h参数以及成功被捕获");
 	                return null;
 	            }
 	        }

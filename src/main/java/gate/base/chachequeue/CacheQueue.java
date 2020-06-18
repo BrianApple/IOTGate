@@ -20,8 +20,7 @@ public class CacheQueue {
 	 */
 	public static ConcurrentHashMap<String, Integer> ipCountRelationCache ;
 	/**
-	 * 缓存前置channel
-	 * 网关连接到前置之后 将对应的channel缓存起来 通过ip获取
+	 * master channel
 	 */
 	private static ConcurrentHashMap<String, Channel> masterChannelCache ;
 	/**
@@ -30,7 +29,7 @@ public class CacheQueue {
 	private static CopyOnWriteArrayList<CachedChannel> roundCache ;
 	
 	/**
-	 * Server4Terminel接收到消息之后 将消息存放到up2MasterQueue队列中
+	 * 内部消息总线
 	 */
 	public static BlockingQueue<ChannelData> up2MasterQueue;
 	
@@ -54,7 +53,6 @@ public class CacheQueue {
 	 * @return
 	 */
 	public static Channel choiceMasterChannel(){
-		//TODO 轮寻策略
 		int masterNum = CacheQueue.masterChannelCache.size();
 		if(masterNum > 0){
 			int nextIndex = (index + 1) % masterNum;

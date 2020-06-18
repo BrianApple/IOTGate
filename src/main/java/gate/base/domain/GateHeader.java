@@ -8,7 +8,7 @@ import java.util.Arrays;
  *
  */
 public class GateHeader {
-	private boolean inBigEndian = false;//默认小端模式（报头使用的是该模式）：  10进制转成16进制数之后  按字节为单位逆序，
+	private boolean inBigEndian = false;//默认小端
 	private byte[] dataBuffer;//真实存放数据的地方
 	private int pos = 0;//自定义指针即对应数组下标
 	
@@ -28,7 +28,7 @@ public class GateHeader {
 		this.dataBuffer = new byte[size];
 	}
 	/**
-	 * 将int转成1个字节的16进制数 写入byte数组
+	 * byte
 	 * @param data
 	 * @throws Exception
 	 */
@@ -39,10 +39,7 @@ public class GateHeader {
 	}
 	
 	/**
-	 * 将int转成2个字节的16进制数 写入byte数组
-	 * 写入顺序：
-	 * 将十进制的数 转成8进制的数，如  63937 --》 0xF9C1   -->  报文中 将将两个字节的数颠倒顺序
-	 * 
+	 * short
 	 * @param i
 	 * @throws Exception
 	 */
@@ -58,9 +55,7 @@ public class GateHeader {
 		this.pos += 2;
 	}
 	/**
-	 * 将int转成4个字节的16进制数 写入byte数组
-	 * 写入顺序：
-	 * 将十进制的数 转成8进制的数，如  63937 --》 0xF9C1   -->  报文中 将将两个字节的数颠倒顺序
+	 * int
 	 * @param i
 	 * @throws Exception
 	 */
@@ -80,9 +75,7 @@ public class GateHeader {
 		this.pos += 4;
 	}
 	/**
-	 * 将int转成8个字节的16进制数 写入byte数组
-	 * 写入顺序：
-	 * 将十进制的数 转成8进制的数，如  63937 --》 0xF9C1   -->  报文中 将将两个字节的数颠倒顺序
+	 * long
 	 * @param l
 	 * @throws Exception
 	 */

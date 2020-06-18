@@ -39,7 +39,7 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
 		/**
-		 * 一旦网关与前置 建立连接 将  该连接通道channel缓存起来，方便Server选择发送上行报文的前置
+		 * 缓存会话
 		 */
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
@@ -53,7 +53,7 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 		super.channelInactive(ctx);
 		
 		/**
-		 * 当网关与前置断开连接 则从缓存中删除对应的channel 以便选择存活的channel发送报文到前置
+		 * 移除会话
 		 */
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();

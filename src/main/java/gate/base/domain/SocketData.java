@@ -20,7 +20,7 @@ public class SocketData {
 	private byte[] lenArea;
 	//报文体
 	private byte[] content;
-	//结尾16
+	//结尾
 	private byte end;
 	
 	

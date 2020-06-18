@@ -152,12 +152,12 @@ public class Client2Master {
 			headBuf.writeInt32(0);
 		}
 		
-		byte[] bs = Inet4Address.getByName(ipAddress.split("|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
+		byte[] bs = Inet4Address.getByName(ipAddress.split("\\|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
 		headBuf.writeInt8(bs[0]);
 		headBuf.writeInt8(bs[1]);
 		headBuf.writeInt8(bs[2]);
 		headBuf.writeInt8(bs[3]);
-		headBuf.writeInt16(Integer.parseInt(ipAddress.split("|")[1]));//port  两个字节表示端口号
+		headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port  两个字节表示端口号
 		headBuf.writeInt32(count);//count  4个字节的count
 		out.writeBytes(headBuf.getDataBuffer());
 		return out;
