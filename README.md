@@ -1,4 +1,6 @@
-### 码云地址（主要在码云维护，最新版请移步至码云）
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0704/194402_de12d97a_1038477.png "IOTGate2.png")
+
+### 码云地址（主要在码云维护，最新版请移步至码云）——声明：本仓库为作者在github唯一原创仓库
 https://gitee.com/willbeahero/IOTGate
 
 ## 通过netty实现自定义协议物联网网关（单机和集群版）
