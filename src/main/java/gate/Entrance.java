@@ -46,6 +46,10 @@ public class Entrance {
 	public static CountDownLatch locks = new CountDownLatch(1);
 	private static RPCProcessor processor = new RPCProcessorImpl();
 	private static String[] protocolType;
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		
 		boolean isCluster = suitCommonLine(args);
@@ -59,61 +63,21 @@ public class Entrance {
 				e1.printStackTrace();
 			}
 		}else{
-			//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
-			
-			for(int i = 0 ; i < masterAddrs.size() ; i++){
-				String addr = masterAddrs.get(i);
-				new Thread(new Runnable() {
-					public void run() {
-						try {
-							Client2Master client2Master = new Client2Master();
-							client2Master.bindAddress2Client(client2Master.configClient(addr,8888,true));
-							
-						} catch (Exception e) {
-							e.printStackTrace();
-							System.exit(-1);
-						}
-					}
-				},"gate2masterThread_ip_"+addr).start();
-			}
+			startCli();
 		}
-		
-		/**
-		 * 后面这部分有点low  将就一下吧，启动过程无所谓了.....O(∩_∩)O哈哈~
-		 */
-		
-		for(int i = 0 ; i < protocolType.length ; i++){
-			//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
-			String pts =  protocolType[i];
-			String pid = pts.split("\\,")[0];//pId
-			
-			new Thread(new Runnable() {
-				public void run() {
-					// TODO Auto-generated method stub
-					
-					String[] pt = pts.split("\\,");
-					boolean isBigEndian = "0".equals(pt[1]) ? false : true;
-					boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[5]) ? false : true;
-					System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s，心跳周期为：%s S", Integer.parseInt(pt[0]),Integer.parseInt(pt[7]),Integer.parseInt(pt[8])));
-					Server4Terminal server4Terminal = new Server4Terminal(pt[0],pt[7]);
-					server4Terminal.bindAddress(server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
-							Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6]),Integer.parseInt(pt[8])));//1, false, -1, 1, 2, true, 1
-					
-				}
-			},"gate2tmnlThread_pid_"+pid).start();
-			ProtocalStrategyCache.protocalStrategyCache.put(pid, pts);
-		}		
-		
+		startSev( protocolType);	
 		try {
 			processor.exportService();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("rpc服务发布失败...............");
 		}
-		
+		/**
+		 * kill pid时 该方法会自动执行
+		 */
 		addHook();
 	}
-	
+
 	
 	/**
 	 * 命令行
@@ -151,7 +115,7 @@ public class Entrance {
         return isCluster;
 	}
 	/**
-	 * 环境初始化  ---目前最还先不用spring管理
+	 * 环境初始化
 	 */
 	public static  void initEnvriment(){
 		
@@ -213,5 +177,49 @@ public class Entrance {
 		}
         return null;
         
+	}
+	
+	public static void startCli(){
+		//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
+		
+		for(int i = 0 ; i < masterAddrs.size() ; i++){
+			String addr = masterAddrs.get(i);
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						Client2Master client2Master = new Client2Master();
+						client2Master.bindAddress2Client(client2Master.configClient(addr,8888,true));
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(-1);
+					}
+				}
+			},"gate2masterThread_ip_"+addr).start();
+		}
+	}
+	
+	public static void startSev(String[] protocolType){
+		for(int i = 0 ; i < protocolType.length ; i++){
+			//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
+			String pts =  protocolType[i];
+			String pid = pts.split("\\,")[0];//pId
+			
+			new Thread(new Runnable() {
+				public void run() {
+					// TODO Auto-generated method stub
+					
+					String[] pt = pts.split("\\,");
+					boolean isBigEndian = "0".equals(pt[1]) ? false : true;
+					boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[5]) ? false : true;
+					System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s，心跳周期为：%s S", Integer.parseInt(pt[0]),Integer.parseInt(pt[7]),Integer.parseInt(pt[8])));
+					Server4Terminal server4Terminal = new Server4Terminal(pt[0],pt[7]);
+					server4Terminal.bindAddress(server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
+							Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6]),Integer.parseInt(pt[8])));//1, false, -1, 1, 2, true, 1
+					
+				}
+			},"gate2tmnlThread_pid_"+pid).start();
+			ProtocalStrategyCache.protocalStrategyCache.put(pid, pts);
+		}		
 	}
 }

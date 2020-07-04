@@ -68,7 +68,7 @@ public class ZKFramework {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("zk连接成功。。。。。");
+		System.out.println("zk连接成功，开始注册节点信息。。。。。");
 		try {
 			zNodeListener();
 			addGateNode();
