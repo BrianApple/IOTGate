@@ -1,5 +1,5 @@
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0704/193005_1886d5b0_1038477.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0704/194402_de12d97a_1038477.png "IOTGate2.png")
 ### IOTGate开源版演示地址
 	http://122.51.117.100:8686/
 
