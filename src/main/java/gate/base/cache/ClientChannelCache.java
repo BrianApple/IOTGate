@@ -12,9 +12,8 @@ import io.netty.channel.Channel;
  *
  */
 public class ClientChannelCache {
-	
 	private static  List<ConcurrentHashMap<String, Channel>> cacheList = new ArrayList<ConcurrentHashMap<String,Channel>>();
-	private static  int scale = 10;
+	private static  int scale = 16;
 	
 	static{
 		initClientChannelCache();
@@ -73,7 +72,6 @@ public class ClientChannelCache {
 		}
 	}
 	private static void logOut(String msg){
-		System.out.println(msg);
 		for(int i = 0 ; i <cacheList.size() ; i ++){
 			System.out.println("缓存监控.............ClientChannelMap"+i+"=="+cacheList.get(i).size());
 		}

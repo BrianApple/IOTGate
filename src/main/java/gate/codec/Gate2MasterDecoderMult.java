@@ -41,7 +41,6 @@ public class Gate2MasterDecoderMult  extends ByteToMessageDecoder{
 					if(gateHeader == ConstantValue.GATE_HEAD_DATA){
 						//1.获取到网关头A8
 						int socketDataLen = in.readIntLE();// readLenArea(in);
-						System.out.println(in.readableBytes());
 						if(in.readableBytes() >= (socketDataLen+25) ){
 							//报文完整
 							in.skipBytes(1);

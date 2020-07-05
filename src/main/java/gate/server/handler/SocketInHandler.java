@@ -72,11 +72,7 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 			} else{
 				ChannelData channelData = (ChannelData)msg;
 				CacheQueue.up2MasterQueue.put(channelData);
-				int len = channelData.getSocketData().getByteBuf().readableBytes();
-				byte[] car =  new byte[len];
-				channelData.getSocketData().getByteBuf().readBytes(car);
-				channelData.getSocketData().getByteBuf().readerIndex(0);
-				analyse();
+//				analyse();
 			}
 			
 			
