@@ -1,4 +1,4 @@
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0704/194402_de12d97a_1038477.png "IOTGate2.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0705/083825_8bdcc48e_1038477.png "IOTGate_logo.png")
 
 ### 码云地址（主要在码云维护，最新版请移步至码云）——声明：本仓库为作者在github唯一原创仓库
 https://gitee.com/willbeahero/IOTGate
