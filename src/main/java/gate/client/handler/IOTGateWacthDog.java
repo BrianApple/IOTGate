@@ -3,7 +3,6 @@ package gate.client.handler;
 
 import java.util.concurrent.TimeUnit;
 
-import gate.base.domain.ChannelData;
 import gate.client.IHolderHanders;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

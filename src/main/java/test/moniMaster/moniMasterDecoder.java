@@ -48,7 +48,7 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 					int socketDataLen =  readLenArea(in);//in.readShortLE();//
 					if(in.readableBytes() >= (socketDataLen+25) ){
 						in.readerIndex(beginReader);
-						SocketData data = new SocketData(in.readBytes(socketDataLen+28));
+						SocketData data = new SocketData(in.readBytes(socketDataLen+30));
 						ChannelData channelData =  new ChannelData(data);
 						
 						
@@ -75,11 +75,7 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 	 * @return
 	 */
 	public int readLenArea(ByteBuf in){
-		
-		ByteBuf buf = in.readBytes(2);//两个字节的长度域
-		byte left = buf.readByte();
-		byte right = buf.readByte();
-		int count = (left & 0xFF) + ((right & 0xFF) << 8 );
+		int count = (in.readByte() & 0xFF) + ((in.readByte() & 0xFF) << 8 ) + ((in.readByte() & 0xFF) << 16  ) + ((in.readByte() & 0xFF) << 24 );
 		return count;
 	}
 

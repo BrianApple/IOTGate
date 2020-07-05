@@ -144,7 +144,7 @@ public class Client2Master {
 
 		GateHeader headBuf= new GateHeader(); 
 		headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
-		headBuf.writeInt16(len);//整个长度
+		headBuf.writeInt32(len);//整个长度
 		headBuf.writeInt8(Integer.valueOf("03").byteValue());//type
 		headBuf.writeInt8(Integer.valueOf("15").byteValue());//protocolType
 		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
