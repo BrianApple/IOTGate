@@ -1,5 +1,5 @@
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0705/083825_8bdcc48e_1038477.png "IOTGate_logo.png")
-### IOTGate开源版演示地址
+### IOTGate开源版（基于GPL-2.0开源，请自行阅读GPL-2.0相关条款）演示地址
 	http://122.51.117.100:8686/
 
 ## 通过netty实现自定义协议物联网网关（单机和集群版）
