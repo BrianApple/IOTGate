@@ -312,7 +312,7 @@ public class MixAll {
 			e.printStackTrace();
 		}
         return null;
-    }
+	}
 	
 	/**
 	 * 序列化指定对象

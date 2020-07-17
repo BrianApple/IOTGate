@@ -19,14 +19,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
- * 模拟 前置
+ * 模拟 模拟前置
+ * 前置（规约解析服务）是翻译和编码报文的实际处理者
  * @author BriansPC
  *
  */
 public class moniMaster {
 	public static void main(String[] args) {
 		
-		String zkAddr = "192.168.18.27:2181,192.168.18.27:2182,192.168.18.27:2183";
+		String zkAddr = "172.17.0.12:2181,172.17.0.12:2182,172.17.0.12:2183";
 		
 		EventLoopGroup boss=new NioEventLoopGroup();
 		EventLoopGroup work=new NioEventLoopGroup();
@@ -68,34 +69,34 @@ public class moniMaster {
 		
 		
 		
+		//如果使用单机版请注掉下面的代码，则模拟前置不会继续连接zookeeper
 		
-		
-		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
-		CuratorFramework cf = CuratorFrameworkFactory.builder()
-					.connectString(zkAddr)
-					.sessionTimeoutMs(6000)
-					.retryPolicy(retryPolicy)
-					.build();
-		System.out.println("zk连接中。。。。。。");
-		//3 开启连接
-		cf.start();
-		while(cf.getState() != CuratorFrameworkState.STARTED){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		System.out.println("zk连接成功。。。。。");
-		
-		
-		try {
-			String addr = MixAll.linuxLocalIP();
-			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/iotGate2Master/"+addr,addr.getBytes());
-			System.out.println("********zookeeper注册前置信息成功！********");
-		} catch (Exception e) {
-			System.err.println("zookeeper注册前置信息失败");
-		}
+//		RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 10);
+//		CuratorFramework cf = CuratorFrameworkFactory.builder()
+//					.connectString(zkAddr)
+//					.sessionTimeoutMs(6000)
+//					.retryPolicy(retryPolicy)
+//					.build();
+//		System.out.println("zk连接中。。。。。。");
+//		//3 开启连接
+//		cf.start();
+//		while(cf.getState() != CuratorFrameworkState.STARTED){
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		System.out.println("zk连接成功。。。。。");
+//		
+//		
+//		try {
+//			String addr = MixAll.linuxLocalIP();
+//			cf.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath("/iotGate2Master/"+addr,addr.getBytes());
+//			System.out.println("********zookeeper注册前置信息成功！********");
+//		} catch (Exception e) {
+//			System.err.println("zookeeper注册前置信息失败");
+//		}
 		
 	}
 }

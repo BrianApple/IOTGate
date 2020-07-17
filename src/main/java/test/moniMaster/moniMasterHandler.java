@@ -30,6 +30,9 @@ public class moniMasterHandler extends ChannelInboundHandlerAdapter {
 			ChannelData data=(ChannelData)msg;
 			ByteBuf recieveMsg=	data.getSocketData().getByteBuf();
 			String code = ByteBufUtil.hexDump(recieveMsg).toUpperCase();//将bytebuf中的可读字节 转换成16进制数字符串
+			if(code.length()==56){
+				return;
+			}
 			int pos = CountHelper.masterRecieveCount.addAndGet(1);
 			if(pos == 1 ){
 				//初始化开始时间
@@ -55,6 +58,7 @@ public class moniMasterHandler extends ChannelInboundHandlerAdapter {
 			 * 通过channel写出数据  会直接执行handler链中最后一个handler开始逆向执行
 			 */
 			Channel  channel = ctx.channel();
+			
 			channel.writeAndFlush(Unpooled.copiedBuffer(StringUtils.decodeHex(code)));
 			
 		}finally{

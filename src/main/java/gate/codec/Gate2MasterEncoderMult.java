@@ -17,12 +17,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 /**
  * 编码器 将对象 编码成字节数组  -->目的地是前置服务
- * 
- * 自定义编解码器时，当参数组装完成之后先存放到自定义的ByteBuf中，封装好之后，
- * 再统一通过参数中的ByteBuf将数据发送，否则当，前置不是通过netty写的时候，
- * 会导致每次前置收到的报文都是不完整的！
- * 
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2019</p>
+ * <p>Company: www.uiotcp.com</p>
  * @author yangcheng
+ * @date 2019年3月3日
+ * @version 1.0
  */
 public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 
@@ -45,12 +45,12 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		int lenth = cliDataBuf.readableBytes();
 		GateHeader headBuf= new GateHeader(); 
 		headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
-		headBuf.writeInt16(lenth);//整个真实报文长度
+		headBuf.writeInt32(lenth);//整个真实报文长度
 		headBuf.writeInt8(Integer.valueOf(1).byteValue());//type
 		if(ipAddress.split("\\|")[0].contains(".")){
 			headBuf.writeInt8((byte)data.getpId());//protocolType
 		}else{
-			headBuf.writeInt8(Integer.valueOf(0+(1<<7)).byteValue());//protocolType
+			headBuf.writeInt8(Integer.valueOf(data.getpId()+(1<<7)).byteValue());//protocolType
 		}
 		
 		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
@@ -73,7 +73,7 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port
 		headBuf.writeInt32(count);//count
 
-		ByteBuf outData = CommonUtil.getDirectByteBuf();
+		ByteBuf outData = CommonUtil.getByteBuf();
 		outData.writeBytes(headBuf.getDataBuffer());
 		//真实报文
 		outData.writeBytes(cliDataBuf);

@@ -21,7 +21,7 @@ public class ProtocalStrategyCache {
 		throw new AssertionError();
 	}
 	/**
-	 * 网关规约规则缓存---缓存当前网关支持的所有规约类型的  匹配规则，通过"规约编号"唯一标识--key=pId
+	 * 网关规约规则缓存
 	 */
 	public static ConcurrentHashMap<String, String> protocalStrategyCache ;
 	/**
@@ -29,7 +29,6 @@ public class ProtocalStrategyCache {
 	 */
 	public static ConcurrentHashMap<String, Server4Terminal> protocalServerCache ;
 	/**
-	 * 缓存IOTGate高级功能中得长度域解析器 Class地址
 	 * key = Pid
 	 * value = 全类名
 	 */

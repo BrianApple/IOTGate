@@ -10,16 +10,18 @@ import gate.base.cache.Cli2MasterLocalCache;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.GateHeader;
 import gate.client.handler.Client2MasterInHandler;
+import gate.client.handler.IOTGateWacthDog;
 import gate.codec.Gate2MasterDecoderMult;
 import gate.codec.Gate2MasterEncoderMult;
 import gate.util.CommonUtil;
 import gate.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -39,13 +41,14 @@ public class Client2Master {
 	private  EventLoopGroup worker = new NioEventLoopGroup();
 	private Cli2MasterLocalCache cli2MasterLocalCache = Cli2MasterLocalCache.getInstance();
 	private String ip;
+	private int port;
 	
 	
 	private DefaultEventExecutorGroup defaultEventExecutorGroup;
 	public Client2Master() {
 		super();
 		this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(//
-				Runtime.getRuntime().availableProcessors()/2 , new ThreadFactory() {
+				Runtime.getRuntime().availableProcessors() , new ThreadFactory() {
 
 	                private AtomicInteger threadIndex = new AtomicInteger(0);
 
@@ -55,7 +58,9 @@ public class Client2Master {
 	                }
 	            });
 	}
-	public  Bootstrap configClient(){
+	public  Bootstrap configClient(String ip ,int port,boolean isOpenWatchDog){
+		this.ip = ip;
+		this.port = port;
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.group(worker)
 		.channel(NioSocketChannel.class)
@@ -70,10 +75,24 @@ public class Client2Master {
 
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
-				//添加控制链
-				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new Gate2MasterDecoderMult());
-				ch.pipeline().addLast(new Gate2MasterEncoderMult());//自定义编解码器
-				ch.pipeline().addLast(new Client2MasterInHandler());
+				ch.pipeline().addLast(new IOTGateWacthDog(bootstrap, ip, port, CommonUtil.wheelTimer, isOpenWatchDog) {
+					
+					@Override
+					public ChannelHandler[] getChannelHandlers() {
+						return new ChannelHandler[]{
+								
+								new Gate2MasterDecoderMult(),
+								new Gate2MasterEncoderMult(),
+								this,
+								new Client2MasterInHandler()
+						};
+					}
+					@Override
+					protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+						ctx.fireChannelRead(msg);
+						
+					}
+				}.getChannelHandlers());
 			}
 			
 		});
@@ -86,9 +105,9 @@ public class Client2Master {
 	 * @param port
 	 * @throws Exception 
 	 */
-	public void bindAddress2Client(Bootstrap bootstrap,String ip, int port) throws Exception{
+	public void bindAddress2Client(Bootstrap bootstrap) throws Exception{
 		cli2MasterLocalCache.set(ip, this);
-		this.ip = ip;
+		
 		ChannelFuture channelFuture=bootstrap.connect(ip, port).sync();
 		
 		/**
@@ -113,7 +132,7 @@ public class Client2Master {
 		/**
 		 * 创建直接内存形式的ByteBuf，不能使用array()方法，但效率高
 		 */
-		ByteBuf out = CommonUtil.getDirectByteBuf();
+		ByteBuf out = CommonUtil.getByteBuf();
 //		PooledByteBufAllocator allocator = PooledByteBufAllocator.DEFAULT;
 //		ByteBuf out = allocator.buffer();
 		String ipAddress = LocalIpAddress;
@@ -125,7 +144,7 @@ public class Client2Master {
 
 		GateHeader headBuf= new GateHeader(); 
 		headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
-		headBuf.writeInt16(len);//整个长度
+		headBuf.writeInt32(len);//整个长度
 		headBuf.writeInt8(Integer.valueOf("03").byteValue());//type
 		headBuf.writeInt8(Integer.valueOf("15").byteValue());//protocolType
 		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
@@ -133,12 +152,12 @@ public class Client2Master {
 			headBuf.writeInt32(0);
 		}
 		
-		byte[] bs = Inet4Address.getByName(ipAddress.split("|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
+		byte[] bs = Inet4Address.getByName(ipAddress.split("\\|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
 		headBuf.writeInt8(bs[0]);
 		headBuf.writeInt8(bs[1]);
 		headBuf.writeInt8(bs[2]);
 		headBuf.writeInt8(bs[3]);
-		headBuf.writeInt16(Integer.parseInt(ipAddress.split("|")[1]));//port  两个字节表示端口号
+		headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port  两个字节表示端口号
 		headBuf.writeInt32(count);//count  4个字节的count
 		out.writeBytes(headBuf.getDataBuffer());
 		return out;

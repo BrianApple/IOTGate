@@ -18,6 +18,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
+import test.CountHelper;
 import io.netty.channel.ChannelHandler.Sharable;
 /**
  * 
@@ -62,22 +63,16 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		try{
 			if(msg instanceof List){
 				List<ChannelData> lists = (List<ChannelData>) msg;
+				
 				for (ChannelData channelData : lists) {
 					CacheQueue.up2MasterQueue.put(channelData);
-//					int len = channelData.getSocketData().getByteBuf().readableBytes();
-//					byte[] car =  new byte[len];
-//					channelData.getSocketData().getByteBuf().readBytes(car);
-//					channelData.getSocketData().getByteBuf().readerIndex(0);
-//					System.out.println("LIST GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+					analyse();
 				}
+				
 			} else{
 				ChannelData channelData = (ChannelData)msg;
 				CacheQueue.up2MasterQueue.put(channelData);
-				int len = channelData.getSocketData().getByteBuf().readableBytes();
-				byte[] car =  new byte[len];
-				channelData.getSocketData().getByteBuf().readBytes(car);
-				channelData.getSocketData().getByteBuf().readerIndex(0);
-				System.out.println("UNIT GATE UP="+StringUtils.encodeHex(car)+";count="+CommonUtil.recieveCount.addAndGet(1));;
+//				analyse();
 			}
 			
 			
@@ -127,7 +122,24 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		}
 		
 	}
-	
+	/**
+     * 统计每1000次并发耗时  单位ms
+     */
+	private void analyse(){
+		
+        if(CountHelper.startTimeLong.get() == 0){
+			synchronized (CountHelper.class) {
+				if(CountHelper.startTimeLong.get() == 0){
+					CountHelper.startTimeLong.set(System.currentTimeMillis());
+				}
+			}
+		}
+		CountHelper.clientRecieveCount.addAndGet(1);
+		long curNum = CountHelper.clientRecieveCount.get();
+		if(curNum%1000 == 0){
+			System.out.println(curNum+"花费了："+(System.currentTimeMillis() - CountHelper.startTimeLong.get()));
+		}
+	}
 	
 
 }

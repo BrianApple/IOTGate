@@ -68,7 +68,7 @@ public class ZKFramework {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("zk连接成功。。。。。");
+		System.out.println("zk连接成功，开始注册节点信息。。。。。");
 		try {
 			zNodeListener();
 			addGateNode();
@@ -216,7 +216,7 @@ public class ZKFramework {
 				try {
 					System.out.println(String.format("！！！前置服务%s连接成功,前置端口必须为8888", addr));
 					Client2Master client2Master = new Client2Master();
-					client2Master.bindAddress2Client(client2Master.configClient(),addr,8888);
+					client2Master.bindAddress2Client(client2Master.configClient(addr,8888,false));
 					
 				} catch (Exception e) {
 					e.printStackTrace();

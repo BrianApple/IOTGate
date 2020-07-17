@@ -12,10 +12,8 @@ import io.netty.channel.Channel;
  *
  */
 public class ClientChannelCache {
-	
-	//将多个存储数据的ConcurrentHashMap放置于集合之中，由于对集合操作只会存在读取的并发，因此不考虑线程安全问题
 	private static  List<ConcurrentHashMap<String, Channel>> cacheList = new ArrayList<ConcurrentHashMap<String,Channel>>();
-	private static  int scale = 10;
+	private static  int scale = 16;
 	
 	static{
 		initClientChannelCache();
@@ -62,8 +60,8 @@ public class ClientChannelCache {
 	
 	public static void removeOne(String key){
 		
-		getCacheInstance(key).remove(key);
-//		logOut("删除数据");
+		Channel channel = getCacheInstance(key).remove(key);
+		channel.closeFuture();
 	}
 	/**
 	 * 清空所有缓存所有数据
@@ -74,7 +72,6 @@ public class ClientChannelCache {
 		}
 	}
 	private static void logOut(String msg){
-		System.out.println(msg);
 		for(int i = 0 ; i <cacheList.size() ; i ++){
 			System.out.println("缓存监控.............ClientChannelMap"+i+"=="+cacheList.get(i).size());
 		}

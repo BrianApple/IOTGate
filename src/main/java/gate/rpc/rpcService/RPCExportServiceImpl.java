@@ -150,10 +150,10 @@ public class RPCExportServiceImpl implements RPCExportService{
 						String[] pt = pts.split("\\,");
 						boolean isBigEndian = "0".equals(pt[1]) ? false : true;
 						boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[5]) ? false : true;
-						System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s", Integer.parseInt(pt[0]),Integer.parseInt(pt[7])));
+						System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s，心跳周期为：300S", Integer.parseInt(pt[0]),Integer.parseInt(pt[7])));
 						Server4Terminal server4Terminal = new Server4Terminal(pt[0],pt[7]);
 						server4Terminal.bindAddress(server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
-								Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6])));//1, false, -1, 1, 2, true, 1
+								Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6]),300));//1, false, -1, 1, 2, true, 1
 						
 					}
 				},"gate2tmnlThread_pid_"+pid).start();

@@ -1,13 +1,10 @@
 package gate.base.chachequeue;
 
 
-import java.util.AbstractQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 import gate.base.domain.ChannelData;
 import io.netty.channel.Channel;
@@ -23,17 +20,16 @@ public class CacheQueue {
 	 */
 	public static ConcurrentHashMap<String, Integer> ipCountRelationCache ;
 	/**
-	 * 缓存前置channel
-	 * 网关连接到前置之后 将对应的channel缓存起来 通过ip获取
+	 * master channel
 	 */
 	private static ConcurrentHashMap<String, Channel> masterChannelCache ;
 	/**
 	 * 轮询策略
 	 */
-	private static CopyOnWriteArrayList<Channel> roundCache ;
+	private static CopyOnWriteArrayList<CachedChannel> roundCache ;
 	
 	/**
-	 * Server4Terminel接收到消息之后 将消息存放到up2MasterQueue队列中
+	 * 内部消息总线
 	 */
 	public static BlockingQueue<ChannelData> up2MasterQueue;
 	
@@ -42,7 +38,7 @@ public class CacheQueue {
 		
 		ipCountRelationCache = new ConcurrentHashMap<String, Integer>();
 		masterChannelCache = new ConcurrentHashMap<String, Channel>();
-		roundCache = new CopyOnWriteArrayList<Channel>();
+		roundCache = new CopyOnWriteArrayList<CachedChannel>();
 		up2MasterQueue = new LinkedBlockingQueue<ChannelData>();
 		down2TmnlQueue = new LinkedBlockingQueue<ChannelData>();
 		
@@ -57,12 +53,11 @@ public class CacheQueue {
 	 * @return
 	 */
 	public static Channel choiceMasterChannel(){
-		//TODO 轮寻策略
 		int masterNum = CacheQueue.masterChannelCache.size();
 		if(masterNum > 0){
 			int nextIndex = (index + 1) % masterNum;
 			index = nextIndex;
-			return roundCache.get(nextIndex);
+			return roundCache.get(nextIndex).getChannel();
 		}
 		return null;
 	}
@@ -81,12 +76,44 @@ public class CacheQueue {
 	}
 	
 	public static void addMasterChannel2LocalCache(String key ,Channel channel ){
+		removeMasterChannelFromLocalCache(key);
 		masterChannelCache.put(key, channel);
-		roundCache.add(channel);
+		roundCache.add(new CachedChannel(key,channel));
 		
 	}
 	public static void removeMasterChannelFromLocalCache(String key ){
 		Channel removedChannel = masterChannelCache.remove(key);
-		roundCache.remove(removedChannel);
+		roundCache.remove(new CachedChannel(key,removedChannel));
+	}
+}
+
+class CachedChannel{
+	
+	private String sig;
+	private Channel channel;
+	public CachedChannel(String sig, Channel channel) {
+		super();
+		this.sig = sig;
+		this.channel = channel;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		return this.sig.equals(((CachedChannel)obj).sig);
+	}
+	@Override
+	public int hashCode() {
+		return this.sig.hashCode();
+	}
+	public String getSig() {
+		return sig;
+	}
+	public void setSig(String sig) {
+		this.sig = sig;
+	}
+	public Channel getChannel() {
+		return channel;
+	}
+	public void setChannel(Channel channel) {
+		this.channel = channel;
 	}
 }
