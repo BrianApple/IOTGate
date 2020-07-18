@@ -28,8 +28,24 @@ public class moniMasterHandler extends ChannelInboundHandlerAdapter {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try{
 			ChannelData data=(ChannelData)msg;
-			ByteBuf recieveMsg=	data.getSocketData().getByteBuf();
+			ByteBuf recieveMsg =	data.getSocketData().getByteBuf();
+			ByteBuf recieveMsgNew =	recieveMsg.slice();
+			recieveMsgNew.skipBytes(1);
+			if((recieveMsgNew.readInt() & 0xFFFFFFFF) == 0){
+				System.out.println("网关登录报文");
+			}else{
+				int tempByte = recieveMsgNew.readByte();
+				int ipType = tempByte & 0x80;
+				int pType = tempByte & 0x7F;
+				
+				int gateNum = recieveMsgNew.readByte();
+				System.out.println(String.format("ip类型== %s , 规约编号== %s ,网关编号 == %s ", 
+						(ipType == 0 ?  "IPV4" : "IPV6"),pType ,gateNum));
+			}
+			
+			
 			String code = ByteBufUtil.hexDump(recieveMsg).toUpperCase();//将bytebuf中的可读字节 转换成16进制数字符串
+			System.out.println(code);
 			if(code.length()==56){
 				return;
 			}
