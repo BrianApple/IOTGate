@@ -1,7 +1,12 @@
 
+
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0705/083825_8bdcc48e_1038477.png "IOTGate_logo.png")
-### IOTGate开源版（基于GPL-2.0开源，请自行阅读GPL-2.0相关条款）演示地址
-	http://122.51.117.100:8686/
+
+### GitHub项目地址（源码优先更新码云仓库）
+https://github.com/BrianApple/IOTGate
+
+### IOTGate开源版（基于GPL-2.0开源，请自行阅读GPL-2.0相关条款）
+演示地址 http://122.51.117.100:8686/
 	
 用户名密码随意输入：
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/1025/220245_3ff17bcc_1038477.png "屏幕截图.png")
@@ -83,10 +88,13 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 
 
 ***
-### 版本规划
+### 版本
+
 - IOTGate-v1.0 版本为集群版网关程序，通过命令行参数动态配置网关为单节点或集群（单节点不依赖zookeeper集群）  网关与前置通讯时默认轮询方式负载均衡
 - IOTGate-v2.0.1.realease   IOTGate第一个正式稳定版本，可用于生产环境直接运行 !
-- IOTGate-v2.0.2realease    解决了大家反应的一些bug，优化了内存泄漏异常，单机版本增加了配置单个规约心跳的配置选项，使得不同规约心跳的管理更加灵活！
+- IOTGate-v2.0.2.realease    解决了大家反应的一些bug，优化了内存泄漏异常，单机版本增加了配置单个规约心跳的配置选项，使得不同规约心跳的管理更加灵活！
+- IOTGate-v2.0.3  IOTGate第一个正式发行版，可执行jar包下载地址 ：https://gitee.com/willbeahero/IOTGate/attach_files/454348/download
+前置网关演示demo下载 ：https://gitee.com/willbeahero/IOTGate/attach_files/454354/download		
 - master 基本功能开发完成，已经支持多规约本地配置以及IOTGateConsole远程开启/关闭/新增/删除网关多规约服务功能。后续master会继续扩展相关功能
 ### 关于多规约支持
 物联网虽然火起来，但目前业内还没有比较统一的通讯规约，MQTT是目前业界使用比较广泛的物联网通讯协议了，我看了下阿里最近弄出来的物联网平台其主要也是支持MQTT物联网设备的接入，但他毕竟不是唯一的通讯规约，光我自己知道的通讯都有好几种了，而且每一种规约的报文格式都各不相同，因此，所谓多规约支持，也不可能做到所有物联网规约全支持，我目前的想法是，通过多规约得基础功能和高级功能可以将比较流行物联网规约都能够支持！
@@ -96,7 +104,7 @@ IOTGate操作指南
 ![IOTGate开源版功能架构图](https://images.gitee.com/uploads/images/2019/1019/191425_eac2830b_1038477.jpeg "IOTGate开源版设计图模.jpg")
 ### GATE CLUSTER 结构图
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
-注：GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
+注：图中GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
 
 ![IOTGateConsole](https://images.gitee.com/uploads/images/2019/0331/152228_782eecd5_1038477.png "IOTGateConsole.png")
 ![规约维护](https://images.gitee.com/uploads/images/2019/0402/173605_1a4217c0_1038477.png "规约维护.png")
@@ -104,7 +112,7 @@ IOTGate操作指南
 ### 计划新增功能（企业版已存在，根据企业版的应用情况回馈至开源社区）
 - 单机规约心跳周期配置（已完成）
 - 数据加密
-- 启动类重构
+- 启动类重构 （已完成）
 
 ### 联系方式
 - QQ群：844082385（免费群）——仅限IOTGate技术交流，详见《进群须知》，加群前请先star本项目，您的支持是我长期坚持的根本动力！
@@ -123,7 +131,8 @@ IOTGate操作指南
 - 杭州物新驱动科技有限公司
 
 ### 浩欣泛在物联网云平台【简称：浩欣物联平台】  软著登记号：2020SR0374701 官网：www.uiotp.com
-    #### 演示账号 guest001  密码 123456
-    #### 简介
+   #### 演示账号 
+用户名 guest001  密码 123456
+   #### 简介
 
-浩欣物联平台采用分布式微服务架构、分布式消息队列、分布式缓存、时序数据存储、流计算等技术实现的支持物联设备遥测数据采集、告警数据预警等功能的泛行业IOT物联网平台，可作为物联网上层应用的物联数据中台， 负责与各种不同规约类型的物联设备直接交互，并为上层应用提供统一的接口和响应数据格式能极大降低物联网研发的成本提高物联网研发效率。浩欣物联平台设备侧采用IOTGate企业版作为物联感知设备网络接入入口。
+浩欣物联平台采用分布式微服务架构、分布式消息队列、分布式缓存、时序数据存储、流计算等技术实现的支持物联设备遥测数据采集、告警数据预警等功能的泛行业IOT物联网平台，可作为物联网上层应用的物联数据中台， 负责与各种不同规约类型的物联设备直接交互，并为上层应用提供统一的接口和响应数据格式能极大降低物联网研发的成本提高物联网研发效率。浩欣物联平台设备侧采用IOTGate企业版作为物联感知设备网络入口。浩欣物联平台受著作权保护，有兴趣的朋友可发邮件至 yangcheng068@foxmail.com
