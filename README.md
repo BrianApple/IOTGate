@@ -15,7 +15,11 @@ https://github.com/BrianApple/IOTGate
 ### 名词解释
 通信规约：应用层通信协议，与有些同学说的的“通信协议”是一个意思
 
-## 通过netty实现自定义协议物联网网关（单机和集群版）
+### IOTGate开源版压测聚合报告
+win10笔记本，堆内存2g,线程数6k
+![IOTGate开源版压测聚合报告](https://images.gitee.com/uploads/images/2020/0901/103619_f16c31c0_1038477.png "屏幕截图.png")
+
+### 通过netty实现自定义协议物联网网关（单机和集群版）
 window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒处理并发心跳8000+（根据jmeter本地最新压测统计数据），20W在线终端(长连接保持)内存占用量1G左右
 
 ### 心跳检测
@@ -129,6 +133,10 @@ IOTGate操作指南
 - 深圳风扇屏技术有限公司
 
 - 杭州物新驱动科技有限公司
+
+### HXAPIGate（零侵入式API网关）
+HXAPIGate是一款基于Netty+Shiro开发的一款高性能零侵入式API网关（被代理微服务不需要任何添加代码或注解，真正的零侵入即可实现分布式特性），适用于REST微服务的API资源授权管理等。项目地址： https://gitee.com/willbeahero/HXAPIGate
+
 
 ### 浩欣泛在物联网云平台【简称：浩欣物联平台】  软著登记号：2020SR0374701 官网：www.uiotp.com
    #### 演示账号 
