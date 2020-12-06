@@ -42,11 +42,7 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 
 	}
 	public ChannelData decodeGateHeader(ByteBuf in){
-<<<<<<< HEAD
-		if(in.readableBytes()>31){
-=======
 		if(in.readableBytes()>29){
->>>>>>> master
 			StringBuilder clientIpAddress ;
 			int beginReader;
 			
