@@ -39,7 +39,7 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		super.channelActive(ctx);
+//		super.channelActive(ctx);
 		/**
 		 * 缓存会话
 		 */
@@ -48,10 +48,6 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
 		String masterIP = ipAddress;
 		CacheQueue.addMasterChannel2LocalCache(masterIP, ctx.channel());
-		InetSocketAddress localSocket = (InetSocketAddress)channel.localAddress();
-		ByteBuf buf = MixAll.GateLogin.loginGateHeader(StringUtils.formatIpAddress(localSocket.getHostName(), 
-				String.valueOf(localSocket.getPort())));
-		ctx.writeAndFlush(buf);
 	}
 
 	@Override

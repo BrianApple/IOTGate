@@ -1,10 +1,14 @@
 package gate.client.handler;
 
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import gate.client.IHolderHanders;
+import gate.util.MixAll;
+import gate.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -48,7 +52,6 @@ public abstract class IOTGateWacthDog extends SimpleChannelInboundHandler<Object
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		
 		ctx.fireChannelActive();
 	}
 
@@ -69,6 +72,10 @@ public abstract class IOTGateWacthDog extends SimpleChannelInboundHandler<Object
 					boolean isSuc = future.isSuccess();
 					if(isSuc){
 						future.channel().pipeline().fireChannelActive();
+						InetSocketAddress localSocket = (InetSocketAddress)future.channel().localAddress();
+						ByteBuf buf = MixAll.GateLogin.loginGateHeader(StringUtils.formatIpAddress(localSocket.getHostName(), 
+								String.valueOf(localSocket.getPort())));
+						future.channel().writeAndFlush(buf);
 					}else{
 						future.channel().pipeline().fireChannelInactive();
 					}

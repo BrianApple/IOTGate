@@ -18,6 +18,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
@@ -79,7 +80,6 @@ public class Client2Master {
 					@Override
 					public ChannelHandler[] getChannelHandlers() {
 						return new ChannelHandler[]{
-								
 								new Gate2MasterDecoderMult(),
 								new Gate2MasterEncoderMult(),
 								this,
@@ -89,7 +89,6 @@ public class Client2Master {
 					@Override
 					protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 						ctx.fireChannelRead(msg);
-						
 					}
 				}.getChannelHandlers());
 			}
@@ -106,19 +105,21 @@ public class Client2Master {
 	 */
 	public void bindAddress2Client(Bootstrap bootstrap) throws Exception{
 		cli2MasterLocalCache.set(ip, this);
+		ChannelFuture channelFuture=bootstrap.connect(ip, port);
 		
-		ChannelFuture channelFuture=bootstrap.connect(ip, port).sync();
-		
+		channelFuture.addListener(new ChannelFutureListener() {
+			
+			@Override
+			public void operationComplete(ChannelFuture future) throws Exception {
+				InetSocketAddress localSocket = (InetSocketAddress)future.channel().localAddress();
+				ByteBuf buf = MixAll.GateLogin.loginGateHeader(StringUtils.formatIpAddress(localSocket.getHostName(), 
+						String.valueOf(localSocket.getPort())));
+				future.channel().writeAndFlush(buf);
+			}
+		});
 		/**
 		 * 链接成功之后 向前置发送网关头信息
 		 */
-		Channel channel  =  channelFuture.channel();
-		//获取网关本地地址
-//		InetSocketAddress insocket = (InetSocketAddress)channel.localAddress();
-//		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-//		ByteBuf buf = MixAll.GateLogin.loginGateHeader(ipAddress);
-//		channelFuture.channel().writeAndFlush(buf);
-		
 		channelFuture.channel().closeFuture().sync();
 	}
 	
