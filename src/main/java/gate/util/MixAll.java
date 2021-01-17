@@ -15,9 +15,9 @@ import java.util.Enumeration;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.parser.Feature;
-import com.alibaba.fastjson.util.DeserializeBeanInfo;
+import gate.base.constant.ConstantValue;
+import gate.base.domain.GateHeader;
+import io.netty.buffer.ByteBuf;
 /**
  * 
  * @Description: 
@@ -95,13 +95,13 @@ public class MixAll {
 	 */
 	
 	public static String linuxLocalIP() throws SocketException{
-		Enumeration allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+		Enumeration<?> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
 		InetAddress ip = null;
 		String localHostIP = null;
 		List<InetAddress> cache = new ArrayList<>();
 		while (allNetInterfaces.hasMoreElements()){
 			NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
-			Enumeration addresses = netInterface.getInetAddresses();
+			Enumeration<?> addresses = netInterface.getInetAddresses();
 			while (addresses.hasMoreElements()){
 				ip = (InetAddress) addresses.nextElement();
 //				System.out.println("：：：：：：：：：：："+ip.getHostAddress());
@@ -328,6 +328,55 @@ public class MixAll {
     }
 	
 	
-	
+	/**
+	 * 网关登录
+	 * <p>Description: </p>
+	 * <p>Copyright: Copyright (c) 2019</p>
+	 * <p>Company: www.uiotcp.com</p>
+	 * @author yangcheng
+	 * @date 2021年1月17日
+	 * @version 1.0
+	 */
+	static public class GateLogin{
+		/**
+		 * 组装网关登录报文
+		 * @param channel
+		 * @throws Exception 
+		 */
+		public static ByteBuf loginGateHeader(String LocalIpAddress) throws Exception{
+			/**
+			 * 创建直接内存形式的ByteBuf，不能使用array()方法，但效率高
+			 */
+			ByteBuf out = CommonUtil.getByteBuf();
+//			PooledByteBufAllocator allocator = PooledByteBufAllocator.DEFAULT;
+//			ByteBuf out = allocator.buffer();
+			String ipAddress = LocalIpAddress;
+			//连接序号默认1
+			int count = 1;
+			//登录报文的真实报文长度为0（真实报文是指 以68开始 16结尾的报文）
+			int len = 0;
+			
+
+			GateHeader headBuf= new GateHeader(); 
+			headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
+			headBuf.writeInt32(len);//整个长度
+			headBuf.writeInt8(Integer.valueOf("03").byteValue());//type
+			headBuf.writeInt8(Integer.valueOf("15").byteValue());//protocolType
+			headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
+			for(int i = 0; i < 3; i++) {  //12个字节的00
+				headBuf.writeInt32(0);
+			}
+			
+			byte[] bs = Inet4Address.getByName(ipAddress.split("\\|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
+			headBuf.writeInt8(bs[0]);
+			headBuf.writeInt8(bs[1]);
+			headBuf.writeInt8(bs[2]);
+			headBuf.writeInt8(bs[3]);
+			headBuf.writeInt16(Integer.parseInt(ipAddress.split("\\|")[1]));//port  两个字节表示端口号
+			headBuf.writeInt32(count);//count  4个字节的count
+			out.writeBytes(headBuf.getDataBuffer());
+			return out;
+		}
+	}
 	
 }

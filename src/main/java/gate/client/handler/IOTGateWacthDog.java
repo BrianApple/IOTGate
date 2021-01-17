@@ -55,7 +55,7 @@ public abstract class IOTGateWacthDog extends SimpleChannelInboundHandler<Object
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		if(flag){
-				timer.newTimeout(this, 800, TimeUnit.MILLISECONDS);
+			timer.newTimeout(this, 800, TimeUnit.MILLISECONDS);
 		}
 		ctx.fireChannelInactive();
 	}

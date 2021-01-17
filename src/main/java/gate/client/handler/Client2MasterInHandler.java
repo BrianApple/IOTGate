@@ -6,7 +6,9 @@ import java.util.List;
 
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
+import gate.util.MixAll;
 import gate.util.StringUtils;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -46,12 +48,15 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
 		String masterIP = ipAddress;
 		CacheQueue.addMasterChannel2LocalCache(masterIP, ctx.channel());
+		InetSocketAddress localSocket = (InetSocketAddress)channel.localAddress();
+		ByteBuf buf = MixAll.GateLogin.loginGateHeader(StringUtils.formatIpAddress(localSocket.getHostName(), 
+				String.valueOf(localSocket.getPort())));
+		ctx.writeAndFlush(buf);
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
-		
 		/**
 		 * 移除会话
 		 */
