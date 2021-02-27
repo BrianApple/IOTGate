@@ -134,6 +134,8 @@ IOTGate操作指南
 
 - 杭州物新驱动科技有限公司
 
+- 杭州数仓网络科技有限公司 （http://www.datanode.cn/ ）
+
 ### HXAPIGate（零侵入式API网关）
 HXAPIGate是一款基于Netty+Shiro开发的一款高性能零侵入式API网关（被代理微服务不需要任何添加代码或注解，真正的零侵入即可实现分布式特性），适用于REST微服务的API资源授权管理等。项目地址： https://gitee.com/willbeahero/HXAPIGate
 
