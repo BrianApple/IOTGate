@@ -6,7 +6,9 @@ import java.util.List;
 
 import gate.base.chachequeue.CacheQueue;
 import gate.base.domain.ChannelData;
+import gate.util.MixAll;
 import gate.util.StringUtils;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -37,7 +39,7 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 	}
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		super.channelActive(ctx);
+//		super.channelActive(ctx);
 		/**
 		 * 缓存会话
 		 */
@@ -51,7 +53,6 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
-		
 		/**
 		 * 移除会话
 		 */
