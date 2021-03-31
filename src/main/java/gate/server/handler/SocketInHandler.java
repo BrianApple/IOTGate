@@ -34,8 +34,9 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		super.channelActive(ctx);
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-		String clientIpAddress = ipAddress;// ctx.channel().remoteAddress().toString().replaceAll("\\/", "");// clientIpAddress = "127.0.0.1:53956"
+		String host = insocket.getHostName();
+		String clientIpAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host,
+				String.valueOf(insocket.getPort()));
 		Integer count = CacheQueue.ipCountRelationCache.get(clientIpAddress);
 		if(count != null && count.intValue() < 10000){
 			CacheQueue.ipCountRelationCache.put(clientIpAddress, count+1);
@@ -53,9 +54,10 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		 */
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-		String clientIpAddress = ipAddress;
-		ClientChannelCache.removeOne(clientIpAddress);
+		String host = insocket.getHostName();
+		String ipAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host,
+				String.valueOf(insocket.getPort()));
+		ClientChannelCache.removeOne(ipAddress);
 	}
 
 	@Override
@@ -92,7 +94,9 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 		 */
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String host = insocket.getHostName();
+		String ipAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host
+				, String.valueOf(insocket.getPort()));
 		String clientIpAddress = ipAddress;
 		ClientChannelCache.removeOne(clientIpAddress);
 		cause.printStackTrace();
@@ -110,7 +114,9 @@ public class SocketInHandler extends ChannelInboundHandlerAdapter{
 					public void operationComplete(ChannelFuture future) throws Exception {
 						Channel channel = future.channel();
 						InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-						String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+						String host = insocket.getHostName();
+						String ipAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host,
+								String.valueOf(insocket.getPort()));
 						String key = ipAddress;
 						System.out.println(key+"心跳超时下线成功....");
 //						ClientChannelCache.removeOne(key);

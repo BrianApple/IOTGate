@@ -60,6 +60,14 @@
 	    <artifactId>javassist</artifactId>
 	    <version>3.21.0-GA</version>
 	</dependency>
+	  <!--iRpc https://gitee.com/willbeahero/iRpc
+	   	iRpc为一款基于netty实现的适用于IOT场景的轻量级高性能rpc框架,支持单机及leader-follower部署模式
+	   -->
+	<dependency>
+	  <groupId>io.github.brianapple</groupId>
+	  <artifactId>iRpc</artifactId>
+	  <version>1.0.1-Release</version>
+	</dependency>
   </dependencies>
   <build>
   		<plugins>

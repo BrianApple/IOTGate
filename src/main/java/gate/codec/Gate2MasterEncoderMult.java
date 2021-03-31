@@ -47,24 +47,26 @@ public class Gate2MasterEncoderMult extends MessageToByteEncoder<ChannelData>{
 		headBuf.writeInt8(Integer.valueOf(ConstantValue.GATE_HEAD_DATA).byteValue());
 		headBuf.writeInt32(lenth);//整个真实报文长度
 		headBuf.writeInt8(Integer.valueOf(1).byteValue());//type
-		if(ipAddress.split("\\|")[0].contains(".")){
+		String host = ipAddress.split("\\|")[0];
+		if(host.contains(".")){
 			headBuf.writeInt8((byte)data.getpId());//protocolType
 		}else{
 			headBuf.writeInt8(Integer.valueOf(data.getpId()+(1<<7)).byteValue());//protocolType
 		}
 		
 		headBuf.writeInt8((byte) CommonUtil.gateNum);//网关编号
-		if(ipAddress.split("\\|")[0].contains(".")){
+
+		if(host.contains(".") || host.equals("localhost")){
 			for(int i = 0; i < 3; i++) {
 				headBuf.writeInt32(0);
 			}
-			byte[] bs = Inet6Address.getByName(ipAddress.split("\\|")[0]).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
+			byte[] bs = Inet6Address.getByName(host).getAddress();//127.0.0.1 -->  [127, 0, 0, 1]
 			headBuf.writeInt8(bs[0]);
 			headBuf.writeInt8(bs[1]);
 			headBuf.writeInt8(bs[2]);
 			headBuf.writeInt8(bs[3]);
 		}else{
-			byte[] bs = Inet6Address.getByName(ipAddress.split("\\|")[0]).getAddress();
+			byte[] bs = Inet6Address.getByName(host).getAddress();
 			for(int i = 0; i < 16; i++){
 				headBuf.writeInt8(bs[i]);
 			}

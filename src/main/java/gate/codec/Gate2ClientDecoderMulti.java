@@ -134,8 +134,9 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 //							in.markReaderIndex();
 							Channel channel = ctx.channel();
 							InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-							String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-							String clientIpAddress = ipAddress;
+							String host = insocket.getHostName();
+							String clientIpAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host
+									, String.valueOf(insocket.getPort()));
 							SocketData data = new SocketData(byteBuf);
 							data.setpId(pId);
 							ChannelData channelData =  new ChannelData(clientIpAddress, data);
@@ -193,8 +194,9 @@ public class Gate2ClientDecoderMulti  extends ByteToMessageDecoder{
 							}
 							Channel channel = ctx.channel();
 							InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-							String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
-							String clientIpAddress = ipAddress;
+							String host = insocket.getHostName();
+							String clientIpAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host,
+									String.valueOf(insocket.getPort()));
 							SocketData data = new SocketData(byteBuf);
 							data.setpId(pId);
 							ChannelData channelData =  new ChannelData(clientIpAddress, data);

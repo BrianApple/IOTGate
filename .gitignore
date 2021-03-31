@@ -7,7 +7,7 @@ target/
 *.dex
 # Java class files  
 *.class   
-
+*.iml
 # Eclipse project files  
 .classpath  
 .project  

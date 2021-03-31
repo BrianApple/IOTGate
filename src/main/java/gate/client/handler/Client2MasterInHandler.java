@@ -45,7 +45,9 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 		 */
 		Channel channel = ctx.channel();
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
-		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		String host = insocket.getHostName();
+		String ipAddress = StringUtils.formatIpAddress(host.equals("localhost") ? "127.0.0.1" :host
+				, String.valueOf(insocket.getPort()));
 		String masterIP = ipAddress;
 		CacheQueue.addMasterChannel2LocalCache(masterIP, ctx.channel());
 	}
