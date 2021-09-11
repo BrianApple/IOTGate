@@ -61,19 +61,16 @@ public class Entrance {
 		if(isCluster){
 			try {
 				locks.await();
+				processor.exportService();
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}else{
 			startCli();
 		}
 		startSev( protocolType);	
-		try {
-			processor.exportService();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("rpc服务发布失败...............");
-		}
 		/**
 		 * kill pid时 该方法会自动执行
 		 */
@@ -213,7 +210,7 @@ public class Entrance {
 		if (-1 != CommonUtil.kernelPort ){
 			new Thread(new Runnable() {
 				public void run() {
-					System.out.println(String.format("！！！网关kernel模式开启，服务端口号为：%s，心跳周期为：%s ", CommonUtil.kernelPort,1));
+					System.out.println(String.format("！！！网关kernel模式开启，服务端口号为：%s，心跳周期为：%sH", CommonUtil.kernelPort,1));
 					Server4Terminal server4Terminal = new Server4Terminal(String.valueOf(CommonUtil.kernelPort));
 					server4Terminal.bindAddress(server4Terminal.config());
 
@@ -232,7 +229,7 @@ public class Entrance {
 					String[] pt = pts.split("\\,");
 					boolean isBigEndian = "0".equals(pt[1]) ? false : true;
 					boolean isDataLenthIncludeLenthFieldLenth = "0".equals(pt[5]) ? false : true;
-					System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s，心跳周期为：%s S", Integer.parseInt(pt[0]),Integer.parseInt(pt[7]),Integer.parseInt(pt[8])));
+					System.out.println(String.format("！！！网关开始提供规约类型为%s的终端连接服务，开启端口号为：%s，心跳周期为：%sS", Integer.parseInt(pt[0]),Integer.parseInt(pt[7]),Integer.parseInt(pt[8])));
 					Server4Terminal server4Terminal = new Server4Terminal(pt[0],pt[7]);
 					server4Terminal.bindAddress(server4Terminal.config(Integer.parseInt(pt[0]),isBigEndian,Integer.parseInt(pt[2]),
 							Integer.parseInt(pt[3]),Integer.parseInt(pt[4]),isDataLenthIncludeLenthFieldLenth,Integer.parseInt(pt[6]),Integer.parseInt(pt[8])));//1, false, -1, 1, 2, true, 1
