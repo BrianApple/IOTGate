@@ -115,8 +115,10 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 物联网虽然火起来，但目前业内还没有比较统一的通讯规约，MQTT是目前业界使用比较广泛的物联网通讯协议了，我看了下阿里最近弄出来的物联网平台其主要也是支持MQTT物联网设备的接入，但他毕竟不是唯一的通讯规约，光我自己知道的通讯都有好几种了，而且每一种规约的报文格式都各不相同，因此，所谓多规约支持，也不可能做到所有物联网规约全支持，我目前的想法是，通过多规约得基础功能和高级功能可以将比较流行物联网规约都能够支持！
 那么IOTGate如何配置实现多规约支持呢？
 IOTGate操作指南
+
 ### IOTGate功能架构图
 ![IOTGate开源版功能架构图](https://images.gitee.com/uploads/images/2019/1019/191425_eac2830b_1038477.jpeg "IOTGate开源版设计图模.jpg")
+
 ### GATE CLUSTER 结构图
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
 注：图中GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
@@ -124,10 +126,19 @@ IOTGate操作指南
 ![IOTGateConsole](https://images.gitee.com/uploads/images/2019/0331/152228_782eecd5_1038477.png "IOTGateConsole.png")
 ![规约维护](https://images.gitee.com/uploads/images/2019/0402/173605_1a4217c0_1038477.png "规约维护.png")
 更多关于IOTGateConsole的说明请到博客中查看
+
 ### 计划新增功能（企业版已存在，根据企业版的应用情况回馈至开源社区）
 - 单机规约心跳周期配置（已完成）
 - 数据加密
 - 启动类重构 （已完成）
+
+### IOTGate最新功能
+#### kernel服务模式
+
+IOTGate最新支持与master节点通信“kernel”模式，下图中，红色实现框部分为normal部署模式，黑色虚线框部分为最新支持的kernel模式，即master节点和所有的感知终端统一作为
+与IOTGate服务网络通信的客户端服务
+![kernel服务模式](https://images.gitee.com/uploads/images/2021/0911/231854_063a02da_1038477.png "IOTGate网络通信架构.png")
+
 
 ### 联系方式
 - QQ群：844082385（免费群）——仅限IOTGate技术交流，详见《进群须知》，加群前请先star本项目，您的支持是我长期坚持的根本动力！
