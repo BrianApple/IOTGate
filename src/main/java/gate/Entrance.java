@@ -1,5 +1,6 @@
 package gate;
 
+import java.awt.image.Kernel;
 import java.io.BufferedReader;
 
 import java.io.File;
@@ -46,6 +47,7 @@ public class Entrance {
 	public static CountDownLatch locks = new CountDownLatch(1);
 	private static RPCProcessor processor = new RPCProcessorImpl();
 	private static String[] protocolType;
+
 	/**
 	 * 
 	 * @param args
@@ -91,19 +93,26 @@ public class Entrance {
             System.exit(-1);
         }
 		boolean isCluster = false;
+        //这里我就不搞一堆设计模式了，特此声明！
         if(commandLine.hasOption("c") && commandLine.hasOption("z")){
         	isCluster = true;
         	zkAddr = commandLine.getOptionValue("z");
         	new ZKFramework().start(zkAddr);
-        }else if (commandLine.hasOption("m")) {
-        	String[] vals =  commandLine.getOptionValue("m").split("\\,");
-        	for (String string : vals) {
-        		masterAddrs.add(string);
+        }else if (commandLine.hasOption("m") || commandLine.hasOption("k")) {
+			String  mArg = commandLine.getOptionValue("m");
+			if (null != mArg){
+				String[] vals =  mArg.split("\\,");
+				for (String string : vals) {
+					masterAddrs.add(string);
+				}
 			}
-        }else{
-        	System.err.println("启动参数有误，请重新启动");
-        	System.exit(-1);
-        }
+			if (commandLine.hasOption("k")){
+				CommonUtil.kernelPort = 10915;
+			}
+        }else {
+			System.err.println("启动参数有误，请重新启动");
+			System.exit(-1);
+		}
         String confFile = commandLine.getOptionValue("f");
         protocolType = getProtocolType(confFile);
         
@@ -199,12 +208,23 @@ public class Entrance {
 		}
 	}
 	
-	public static void startSev(String[] protocolType){
-		for(int i = 0 ; i < protocolType.length ; i++){
+	public static void startSev(String... protocolType){
+		int size = protocolType.length;
+		if (-1 != CommonUtil.kernelPort ){
+			new Thread(new Runnable() {
+				public void run() {
+					System.out.println(String.format("！！！网关kernel模式开启，服务端口号为：%s，心跳周期为：%s ", CommonUtil.kernelPort,1));
+					Server4Terminal server4Terminal = new Server4Terminal(String.valueOf(CommonUtil.kernelPort));
+					server4Terminal.bindAddress(server4Terminal.config());
+
+				}
+			},"gate2masterThread_kernel_0").start();
+		}
+		for(int i = 0 ; i <size  ; i++){
 			//启动与终端对接的服务端  因为是阻塞运行 需要开线程启动---后续版本中会变动
 			String pts =  protocolType[i];
 			String pid = pts.split("\\,")[0];//pId
-			
+
 			new Thread(new Runnable() {
 				public void run() {
 					// TODO Auto-generated method stub

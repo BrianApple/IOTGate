@@ -27,7 +27,7 @@ public class CommonUtil {
 	 * 网关编号
 	 */
 	public static int gateNum ;
-	
+	public static int kernelPort = -1;
 	/**
 	 * 使用堆内存ByteBuf，减少对外内存使用，便于通过gc垃圾回收
 	 */
@@ -122,7 +122,11 @@ public class CommonUtil {
         opt = new Option("m", true, "master addr, eg 127.0.0.1,127.0.0.1");
         opt.setRequired(false);
         options.addOption(opt);
-        
+
+        opt = new Option("k", false, "kernel port, eg 10915");
+        opt.setRequired(false);
+        options.addOption(opt);
+
         opt = new Option("f", true, "cache file url: eg win:'D:\\iotGate.conf'  ; linux: '/gate/iotGate.conf'");
         opt.setRequired(true);
         options.addOption(opt);

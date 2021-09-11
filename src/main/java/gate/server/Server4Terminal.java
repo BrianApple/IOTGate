@@ -6,8 +6,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import gate.base.cache.ProtocalStrategyCache;
+import gate.client.handler.Client2MasterInHandler;
 import gate.codec.Gate2ClientDecoderMulti;
 import gate.codec.Gate2ClientEncoderMulti;
+import gate.codec.Gate2MasterDecoderMult;
+import gate.codec.Gate2MasterEncoderMult;
 import gate.server.handler.SocketInHandler;
 import gate.util.CommonUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -37,7 +40,8 @@ public class Server4Terminal {
 	private  EventLoopGroup  boss;
 	private  EventLoopGroup work;
 	private DefaultEventExecutorGroup defaultEventExecutorGroup;
-	
+	private boolean kernel = false;
+
 	public Server4Terminal (String pId,String serverPort){
 		this.pId = pId;
 		this.serverPort = serverPort;
@@ -56,7 +60,13 @@ public class Server4Terminal {
 	            });
 	}
 	
-	
+	public Server4Terminal (String serverPort){
+		this.serverPort = serverPort;
+		this.boss = new NioEventLoopGroup(1);
+		this.work = new NioEventLoopGroup(2);
+	}
+
+
 	/**
 	 * 通过引导配置参数--长度域固定
 	 * @return
@@ -79,12 +89,41 @@ public class Server4Terminal {
 				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new IdleStateHandler(0, 0, heartbeat, TimeUnit.SECONDS));
 				//自定义编解码器  需要在自定义的handler的前面即pipeline链的前端,不能放在自定义handler后面，否则不起作用
 				ch.pipeline().addLast("decoder",new Gate2ClientDecoderMulti(pId, isBigEndian, beginHexVal,
-						lengthFieldOffset, lengthFieldLength, isDataLenthIncludeLenthFieldLenth, exceptDataLenth));//698长度域表示不包含起始符和结束符长度:1, false, -1, 1, 2, true, 1
+						lengthFieldOffset, lengthFieldLength, isDataLenthIncludeLenthFieldLenth, exceptDataLenth));
 				ch.pipeline().addLast("encoder",new Gate2ClientEncoderMulti());
 				ch.pipeline().addLast(new SocketInHandler());
 			}
 		});
 		 
+		return serverBootstrap;
+	}
+	/**
+	 * kernel模式
+	 * @return
+	 */
+	public  ServerBootstrap config(){
+		this.kernel = true;
+		 ServerBootstrap serverBootstrap = new ServerBootstrap();
+		 serverBootstrap
+		 .group(boss, work)
+		 .channel(NioServerSocketChannel.class)
+		 .option(ChannelOption.SO_KEEPALIVE, true)
+		 .option(ChannelOption.TCP_NODELAY, true)
+		 .option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+         .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+		 .childHandler(new ChannelInitializer<SocketChannel>() {
+
+			@Override
+			protected void initChannel(SocketChannel ch) throws Exception {
+				//1小时无读写事件，自动断连
+				ch.pipeline().addLast(/*defaultEventExecutorGroup,*/new IdleStateHandler(0, 0, 1, TimeUnit.HOURS));
+				//自定义编解码器  需要在自定义的handler的前面即pipeline链的前端,不能放在自定义handler后面，否则不起作用
+				ch.pipeline().addLast("decoder",new Gate2MasterDecoderMult());
+				ch.pipeline().addLast("encoder",new Gate2MasterEncoderMult());
+				ch.pipeline().addLast(new Client2MasterInHandler());
+			}
+		});
+
 		return serverBootstrap;
 	}
 
@@ -97,7 +136,9 @@ public class Server4Terminal {
 	public  void bindAddress(ServerBootstrap serverBootstrap){
 		ChannelFuture channelFuture;
 		try {
-			ProtocalStrategyCache.protocalServerCache.put(pId, this);
+			if(!kernel){
+				ProtocalStrategyCache.protocalServerCache.put(pId, this);
+			}
 			channelFuture = serverBootstrap.bind(Integer.parseInt(serverPort)).sync();
 			System.out.println("网关服务端已启动！！");
 			channelFuture.channel().closeFuture().sync();

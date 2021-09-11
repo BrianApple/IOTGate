@@ -43,7 +43,7 @@ public interface RPCExportService {
 	
 	/**
 	 * 删除规约，删除之后不能再有其它操作
-	 * @param str
+	 * @param pId
 	 * @return
 	 */
 	ResponseData delProtocalByPid(String pId);
@@ -51,14 +51,14 @@ public interface RPCExportService {
 	//----------------------------------------------------------
 	/**
 	 * 通过指定端口开启被stop的网关服务
-	 * @param str
+	 * @param pId
 	 * @return
 	 */
 	ResponseData startProtocalServiceByPid(String pId);
 	
 	/**
 	 * 通过指定端口关闭相关网关服务
-	 * @param str
+	 * @param pId
 	 * @return
 	 */
 	ResponseData stopProtocalServiceByPid(String pId);
