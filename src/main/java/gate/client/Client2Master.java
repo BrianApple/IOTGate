@@ -99,9 +99,7 @@ public class Client2Master {
 	/**
 	 * 绑定客户端到指定的ip 和 端口port
 	 * @param bootstrap
-	 * @param ip
-	 * @param port
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void bindAddress2Client(Bootstrap bootstrap) throws Exception{
 		cli2MasterLocalCache.set(ip, this);
