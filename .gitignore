@@ -11,4 +11,6 @@ target/
 # Eclipse project files  
 .classpath  
 .project  
-.DS_Store  
+.DS_Store
+# idea
+.idea/
