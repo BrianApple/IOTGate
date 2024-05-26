@@ -71,7 +71,11 @@ public class moniTerminal {
 						 * 		8，该协议通过网关分配的固定端口
 						 * 		9，该协议默认的设备在线心跳周期
 						 */
-						byte[] data = StringUtils.decodeHex("681E0081052360541304000024B801000100F007E2071A040F25090000120416");
+
+//						byte[] data = StringUtils.decodeHex("000100000006 01 0600340000".replaceAll(" ", ""));
+						byte[] data = StringUtils.decodeHex("FFFF00000002 0001".replaceAll(" ", ""));
+
+
 						/**
 						 * 规约类型2
 						 */
@@ -90,7 +94,7 @@ public class moniTerminal {
 				channelFuture.channel().closeFuture().sync();
 				work.shutdownGracefully();
 	}
-	private static int port = 9811;
+	private static int port = 9813;
 	
 	public static void main(String[] args) throws InterruptedException {
 		/**

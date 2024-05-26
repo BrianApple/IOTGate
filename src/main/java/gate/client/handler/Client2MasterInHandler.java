@@ -50,6 +50,11 @@ public class Client2MasterInHandler extends SimpleChannelInboundHandler<Object>{
 				, String.valueOf(insocket.getPort()));
 		String masterIP = ipAddress;
 		CacheQueue.addMasterChannel2LocalCache(masterIP, ctx.channel());
+		//发送IOTGate登录报文
+		InetSocketAddress localSocket = (InetSocketAddress)ctx.channel().localAddress();
+		ByteBuf buf = MixAll.GateLogin.loginGateHeader(StringUtils.formatIpAddress(localSocket.getHostName(),
+				String.valueOf(localSocket.getPort())));
+		ctx.channel().writeAndFlush(buf);
 	}
 
 	@Override
