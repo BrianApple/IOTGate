@@ -95,7 +95,7 @@ public class Entrance {
         	isCluster = true;
         	zkAddr = commandLine.getOptionValue("z");
         	new ZKFramework().start(zkAddr);
-        }else if (commandLine.hasOption("m") || commandLine.hasOption("k")) {
+        }else if (commandLine.hasOption("m") ) {
 			String  mArg = commandLine.getOptionValue("m");
 			if (null != mArg){
 				String[] vals =  mArg.split("\\,");
@@ -103,10 +103,10 @@ public class Entrance {
 					masterAddrs.add(string);
 				}
 			}
-			if (commandLine.hasOption("k")){
-				CommonUtil.kernelPort = 10915;
-			}
-        }else {
+
+        } else if (commandLine.hasOption("k")) {
+            CommonUtil.kernelPort = 10915;
+        } else {
 			System.err.println("启动参数有误，请重新启动");
 			System.exit(-1);
 		}
