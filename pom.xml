@@ -40,14 +40,16 @@
 	</dependency>
 	<!--google Protostuff -->
     <dependency>
-        <groupId>com.dyuproject.protostuff</groupId>
-        <artifactId>protostuff-core</artifactId>
-        <version>1.0.7</version>
+      <groupId>com.dyuproject.protostuff</groupId>
+      <artifactId>protostuff-core</artifactId>
+      <version>1.4.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>com.dyuproject.protostuff</groupId>
-        <artifactId>protostuff-runtime</artifactId>
-        <version>1.0.7</version>
+      <groupId>com.dyuproject.protostuff</groupId>
+      <artifactId>protostuff-runtime</artifactId>
+      <version>1.4.0</version>
+      <scope>compile</scope>
     </dependency>
     <!-- Objenesis -->
     <dependency>
@@ -99,7 +101,7 @@
                         <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>

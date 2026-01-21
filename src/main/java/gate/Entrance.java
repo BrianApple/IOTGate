@@ -201,7 +201,7 @@ public class Entrance {
 						System.exit(-1);
 					}
 				}
-			},"gate2masterThread_ip_"+addr).start();
+			},"gate2masterThread_client_ip_"+addr).start();
 		}
 	}
 	
