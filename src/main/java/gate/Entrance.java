@@ -186,8 +186,10 @@ public class Entrance {
 	}
 	
 	public static void startCli(){
-		//启动与前置对接的客户端  因为是阻塞运行 需要开线程启动
-		
+        if (-1 != CommonUtil.kernelPort ){
+            //  当kernel模式启动服务时，client访问前置方式自动关闭
+            return;
+        }
 		for(int i = 0 ; i < masterAddrs.size() ; i++){
 			String addr = masterAddrs.get(i);
 			new Thread(new Runnable() {
@@ -213,7 +215,6 @@ public class Entrance {
 					System.out.println(String.format("！！！网关kernel模式开启，服务端口号为：%s，心跳周期为：%sH", CommonUtil.kernelPort,1));
 					Server4Terminal server4Terminal = new Server4Terminal(String.valueOf(CommonUtil.kernelPort));
 					server4Terminal.bindAddress(server4Terminal.config());
-
 				}
 			},"gate2masterThread_kernel_0").start();
 		}
