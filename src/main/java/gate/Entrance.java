@@ -19,6 +19,7 @@ import gate.base.cache.ProtocalStrategyCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.client.Client2Master;
 import gate.concurrent.ThreadFactoryImpl;
+import gate.register.HttpRegisterClient;
 import gate.rpc.rpcProcessor.RPCProcessor;
 import gate.rpc.rpcProcessor.RPCProcessorImpl;
 import gate.server.Server4Terminal;
@@ -39,6 +40,14 @@ public class Entrance {
 	public static List<String> masterAddrs = new ArrayList<>(1);
 	private static RPCProcessor processor = new RPCProcessorImpl();
 	private static String[] protocolType;
+	/**
+	 * 前端管理服务(Console)地址：-c 参数配合 -r 指定，网关启动后主动注册
+	 */
+	public static String consoleAddr = null;
+	/**
+	 * 网关注册客户端：-c 模式启动，JVM关闭钩子中反注册
+	 */
+	public static HttpRegisterClient registerClient = null;
 
 	/**
 	 * 
@@ -46,15 +55,18 @@ public class Entrance {
 	 */
 	public static void main(String[] args) {
 		
-		boolean isCluster = suitCommonLine(args);
+		boolean registerToConsole = suitCommonLine(args);
 		BannerUtil.info();
 		System.setProperty("org.jboss.netty.epollBugWorkaround", "true");
 		initEnvriment();
-		if(isCluster){
+		if(registerToConsole){
 			try {
-				//去除zookeeper依赖：集群模式下直连master并立即发布rpc服务
+				//-c 参数语义：主动注册到前端管理服务(Console)；
+				//master 数据通道仍通过 -m 直连前置，发布rpc服务供Console管理
 				startCli();
 				processor.exportService();
+				registerClient = new HttpRegisterClient(consoleAddr, CommonUtil.gateNum);
+				registerClient.start();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -80,19 +92,20 @@ public class Entrance {
         if (null == commandLine) {
             System.exit(-1);
         }
-		boolean isCluster = false;
+		boolean registerToConsole = false;
         //这里我就不搞一堆设计模式了，特此声明！
-        //去除zookeeper依赖：集群模式通过 -c -m masterAddr 直连master节点
-        if(commandLine.hasOption("c") && commandLine.hasOption("m")){
-        	isCluster = true;
-        	String  mArg = commandLine.getOptionValue("m");
-			if (null != mArg){
-				String[] vals =  mArg.split("\\,");
-				for (String string : vals) {
-					masterAddrs.add(string);
-				}
-			}
-        }else if (commandLine.hasOption("m") ) {
+        //-c 参数语义：主动注册到前端管理服务(Console)，配合 -r 指定Console地址(支持 ip / ip:port，默认端口8686)
+        if(commandLine.hasOption("c")){
+        	String rArg = commandLine.getOptionValue("r");
+        	if (null == rArg || rArg.trim().isEmpty()) {
+        		System.err.println("启动参数有误：-c 需配合 -r 指定前端管理服务(Console)地址，如 -c -r 192.168.1.10:8686");
+        		System.exit(-1);
+        	}
+        	consoleAddr = rArg.trim();
+        	registerToConsole = true;
+        }
+        //master 数据通道直连前置(8888)，逻辑零改动
+        if(commandLine.hasOption("m")) {
 			String  mArg = commandLine.getOptionValue("m");
 			if (null != mArg){
 				String[] vals =  mArg.split("\\,");
@@ -103,7 +116,7 @@ public class Entrance {
 
         } else if (commandLine.hasOption("k")) {
             CommonUtil.kernelPort = 10915;
-        } else {
+        } else if (!registerToConsole) {
 			System.err.println("启动参数有误，请重新启动");
 			System.exit(-1);
 		}
@@ -115,7 +128,7 @@ public class Entrance {
         if(commandLine.hasOption("p")){
         	gatePort = Integer.parseInt(commandLine.getOptionValue("p"));
    	 	}
-        return isCluster;
+        return registerToConsole;
 	}
 	/**
 	 * 环境初始化
@@ -141,6 +154,10 @@ public class Entrance {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			
 			public void run() {
+				//主动向Console反注册(尽力而为，失败由心跳超时判定兜底)
+				if(registerClient != null){
+					registerClient.unregister();
+				}
 				//清空缓存信息
 				System.out.println("网关正常关闭前执行  清空所有缓存信息...............................");
 				ClientChannelCache.clearAll();

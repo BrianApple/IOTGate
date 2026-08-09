@@ -119,6 +119,14 @@ public class CommonUtil {
         opt.setRequired(false);
         options.addOption(opt);
 
+        /**
+         * -c 参数语义：主动注册到前端管理服务(Console)
+         * 配合 -r 指定Console地址(支持 ip / ip:port，默认端口8686)
+         */
+        opt = new Option("r", true, "console addr for gate register, eg 192.168.1.10:8686");
+        opt.setRequired(false);
+        options.addOption(opt);
+
         opt = new Option("k", false, "kernel port, eg 10915");
         opt.setRequired(false);
         options.addOption(opt);
