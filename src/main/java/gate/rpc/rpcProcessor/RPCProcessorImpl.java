@@ -9,6 +9,7 @@ import gate.remoting.RemoteServer;
 import gate.rpc.annotation.RPCService;
 import gate.rpc.dataBridge.RequestData;
 import gate.rpc.dataBridge.ResponseData;
+import gate.rpc.rpcService.RPCExportServiceImpl;
 import gate.util.MixAll;
 /**
  * 
@@ -20,6 +21,9 @@ public class RPCProcessorImpl implements RPCProcessor {
 	
 	@Override
 	public void exportService() throws Exception {
+		// 显式注册内置RPC服务(避免依赖包扫描——jar包运行时file协议扫描会失效)
+		registerService(RPCExportServiceImpl.class);
+		// 保留包扫描机制，支持后续扩展其他@RPCService实现类
 		List<String> result = MixAll.getClazzName("gate.rpc.rpcService",false);
 		for (String className : result) {
 			Class<?> clazz = Class.forName(className);
@@ -29,6 +33,13 @@ public class RPCProcessorImpl implements RPCProcessor {
 		}
 		new RemoteServer().start();
 		System.out.println("发布rpc服务完毕........");
+	}
+	
+	private void registerService(Class<?> clazz){
+		if(clazz.isAnnotationPresent(RPCService.class)){
+			RPCCache.putClass(clazz.getSimpleName(), clazz);
+			System.out.println("已注册RPC服务: " + clazz.getName());
+		}
 	}
 
 	@Override

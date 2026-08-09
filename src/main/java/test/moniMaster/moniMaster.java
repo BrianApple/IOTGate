@@ -1,13 +1,5 @@
 package test.moniMaster;
 
-import org.apache.curator.RetryPolicy;
-
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.zookeeper.CreateMode;
-
 import gate.util.MixAll;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,8 +18,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class moniMaster {
 	public static void main(String[] args) {
-		
-		String zkAddr = "172.17.0.12:2181,172.17.0.12:2182,172.17.0.12:2183";
 		
 		EventLoopGroup boss=new NioEventLoopGroup();
 		EventLoopGroup work=new NioEventLoopGroup();

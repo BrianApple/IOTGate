@@ -112,12 +112,8 @@ public class CommonUtil {
         opt.setRequired(false);
         options.addOption(opt);
 
-        opt =new Option("z",  true,
-                    "zk address list, eg: 192.168.18.27:2181,192.168.18.27:2182,192.168.18.27:2183");
-        opt.setRequired(false);
-        options.addOption(opt);
         /**
-         * 如果未启用zookeeper集群的话则手动传入master地址
+         * 去除zookeeper依赖：集群模式下通过-m手动传入master地址
          */
         opt = new Option("m", true, "master addr, eg 127.0.0.1,127.0.0.1");
         opt.setRequired(false);

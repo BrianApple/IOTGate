@@ -9,11 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -23,7 +18,6 @@ import gate.base.cache.ClientChannelCache;
 import gate.base.cache.ProtocalStrategyCache;
 import gate.base.chachequeue.CacheQueue;
 import gate.client.Client2Master;
-import gate.cluster.ZKFramework;
 import gate.concurrent.ThreadFactoryImpl;
 import gate.rpc.rpcProcessor.RPCProcessor;
 import gate.rpc.rpcProcessor.RPCProcessorImpl;
@@ -42,9 +36,7 @@ public class Entrance {
 	
 	public static CommandLine commandLine = null;
 	public static int gatePort = 9811;
-	public static String zkAddr = null;
 	public static List<String> masterAddrs = new ArrayList<>(1);
-	public static CountDownLatch locks = new CountDownLatch(1);
 	private static RPCProcessor processor = new RPCProcessorImpl();
 	private static String[] protocolType;
 
@@ -60,10 +52,9 @@ public class Entrance {
 		initEnvriment();
 		if(isCluster){
 			try {
-				locks.await();
+				//去除zookeeper依赖：集群模式下直连master并立即发布rpc服务
+				startCli();
 				processor.exportService();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -91,10 +82,16 @@ public class Entrance {
         }
 		boolean isCluster = false;
         //这里我就不搞一堆设计模式了，特此声明！
-        if(commandLine.hasOption("c") && commandLine.hasOption("z")){
+        //去除zookeeper依赖：集群模式通过 -c -m masterAddr 直连master节点
+        if(commandLine.hasOption("c") && commandLine.hasOption("m")){
         	isCluster = true;
-        	zkAddr = commandLine.getOptionValue("z");
-        	new ZKFramework().start(zkAddr);
+        	String  mArg = commandLine.getOptionValue("m");
+			if (null != mArg){
+				String[] vals =  mArg.split("\\,");
+				for (String string : vals) {
+					masterAddrs.add(string);
+				}
+			}
         }else if (commandLine.hasOption("m") ) {
 			String  mArg = commandLine.getOptionValue("m");
 			if (null != mArg){
