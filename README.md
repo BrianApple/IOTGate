@@ -38,7 +38,8 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 
 ### 端口占用
 - kernel模式默认端口为：10915 （-k命令行参数开启）
-- rpc通信：10915 (集群模式下开启)
+- rpc通信：10916 (集群模式下开启，Console经此端口调用网关规约启停等RPC)
+- 前置(master)数据通道：8888 （-m参数直连）
 
 ### 命令行参数说明
 
@@ -46,7 +47,7 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 |------------- |----------|----------|----------|
 | 		-n	   |	是  | 是  | 网关编号  |
 | 		-c	   |	否  | 否  | 开启"主动注册到前端管理服务(IOTGateConsole)"，需配合-r指定Console地址  |
-| 		-r	   |	否  | 是  | 前端管理服务(Console)地址，支持 ip / ip:port，默认端口8686，如 192.168.1.10:8686  |
+| 		-r	   |	否  | 是  | 前端管理服务(Console)地址，支持 ip / ip:port / http://ip:port，默认端口8686，如 192.168.1.10:8686  |
 | 		-m	   |	否  | 是  | 前置ip地址(不含端口，前置默认8888)  |
 | 		-k	   |	否  | 否  | 开启kernel模式，默认端口为10915  |
 | 		-f	   |	是  | 是  | 配置文件"iotGate.conf"的本地全路径   |
@@ -57,6 +58,14 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
  - 集群方式启动：命令行参数“-c -r”开启"主动注册到前端管理服务"模式，“-r”指定IOTGateConsole地址（支持 ip 或 ip:port，默认端口8686），同时“-m”指定前置服务地址（逗号分隔；v2.0起去除zookeeper依赖，通过-m直连前置，数据通道零改动）
    - 注册成功后网关每10s向Console发送心跳，Console侧30s未收到心跳自动判离线；网关正常关闭时主动反注册
    - Console侧注册表与静态 gate.nodes 配置并存：主动注册的节点优先，静态配置兜底
+
+### 部署形态（网关 + 管理平台可选搭配）
+IOTGate 网关与 IOTGateConsole 管理平台是两个独立工程，组合成完整部署形态，**二者可选搭配**：
+- **仅网关（最小部署）**：只用 `-m` 直连前置，无需管理平台，数据通道零依赖
+- **网关 + 管理平台（推荐）**：网关 `-c -r <consoleIp>` 主动注册到 IOTGateConsole，Console 提供节点监控、规约启停管理、AI 智能体等能力，形成完整的"网关-控制台"管理闭环
+- 管理平台（IOTGateConsole）为 Spring Boot 3.5 Web 工程，默认端口 **8686**，项目地址：https://gitee.com/willbeahero/IOTGateConsole
+- 使用前提：管理平台需配置 MySQL（本机 13306/3306 均可，见其 README）并启动；网关侧无需任何配置依赖 Console 的注册表，未启动 Console 时网关仅以 `-m` 模式运行，不影响数据通道
+
 ### 自定义网关头结构与注意事项
  
  网关报头，是网关与前置通信时，作为网关登录和传输真实报文时携带网关自身和终端响应参数的报文，报文结构是自己定义，前置按照定义好的报文格式获取数据并做相应处理。
@@ -109,6 +118,7 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 - IOTGate-v2.0.3  IOTGate第一个正式发行版，可执行jar包下载地址 ：https://gitee.com/willbeahero/IOTGate/attach_files/454348/download
 前置网关演示demo下载 ：https://gitee.com/willbeahero/IOTGate/attach_files/454354/download		
 - master 基本功能开发完成，已经支持多规约本地配置以及IOTGateConsole远程开启/关闭/新增/删除网关多规约服务功能。后续master会继续扩展相关功能
+- **master（2026-08 架构演进）**：去除 Zookeeper 依赖（集群模式改 `-m` 直连前置，数据通道零改动）；新增 `-c -r` 网关主动注册模式（HTTP 注册 + 10s 心跳 + 404 自愈重注册），与 IOTGateConsole v2.2 智能体版（节点监控/规约启停/AI 智能体）配套形成完整部署形态
 
 - IOTGate-v3.x 开发中，IOTGate智能物联网通信网关，支持大模型MCP协议，实现基于大模型交互对话以创建IOTGate通信协议代理
 
@@ -129,10 +139,20 @@ window笔记本电脑本地测试：**单网关**、**单前置节点**，每秒
 
 ### GATE CLUSTER 结构图
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
-注：图中GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个web工程，用户登录之后可以查看当前GATE CLUSTER的运行状态监控，并可执行网关重启、关闭、启动，网关多规约支持策略等操作：
+注：图中GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个 Spring Boot 3.5 Web 工程，用户登录之后可以查看当前 GATE CLUSTER 的运行状态监控，并可执行网关规约解析服务的启动、关闭、新增、删除等操作：
 
-![IOTGateConsole](https://images.gitee.com/uploads/images/2019/0331/152228_782eecd5_1038477.png "IOTGateConsole.png")
-![规约维护](https://images.gitee.com/uploads/images/2019/0402/173605_1a4217c0_1038477.png "规约维护.png")
+![节点管理（动态注册节点监控）](docs/screenshots/node-manage-v2.png)
+- **节点管理**：实时展示网关节点列表，区分**动态注册**（网关 `-c -r` 主动注册，含最近心跳、在线时长）与**静态配置**（application.properties 中 gate.nodes 兜底）两种来源，节点在线状态、RPC 连通状态一目了然
+
+![规约管理（多规约策略配置）](docs/screenshots/strategy-page-v2.png)
+- **规约管理**：远程开启/关闭/新增/删除网关多规约解析服务，规约参数（大小端、长度域偏移/长度、端口等）在线维护，变更实时同步到网关
+
+![AI智能体对话解析](docs/screenshots/bot-chat-result.png)
+- **AI 智能体（v2.2）**：内置 LangChain4j 悬浮机器人，粘贴协议**帧结构描述**即可由大模型自动提取长度域信息，推导拆包/黏包解码参数并一键填充到规约表单
+
+![大模型配置面板](docs/screenshots/bot-settings.png)
+- **大模型配置**：厂商无关（DeepSeek/通义/GLM/Ollama 等任意 OpenAI 兼容接口），可视化修改模型地址/Key/温度等，保存即时生效无需重启
+
 更多关于IOTGateConsole的说明请到博客中查看 
  
 ### 计划新增功能
