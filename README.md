@@ -22,7 +22,7 @@ https://github.com/BrianApple/IOTGate
 演示地址http://113.31.103.53:8686/
 	
 用户名密码随意输入：
-![输入图片说明](https://images.gitee.com/uploads/images/2019/1025/220245_3ff17bcc_1038477.png "屏幕截图.png")
+![新版登录页](docs/screenshots/login-v2.2-new.png)
 如果跳转报错则重新在地址栏输入http://113.31.103.xx:8686/  即可正常访问！服务器资源有限，请不要对网关在线压测，谢谢！！
  ** 👨‍💻👨‍💻👨‍💻服务器被被挖矿木马感染了,目前木马已经被干掉,万事为了珍惜我宝贵的服务器资源就暂时不提供演示版了 **
 	
@@ -152,16 +152,16 @@ IOTGate 网关与 IOTGateConsole 管理平台是两个独立工程，组合成�
 ![集群版IOTGate架构](https://images.gitee.com/uploads/images/2019/0325/101113_a6702fb6_1038477.jpeg "IOTGate.jpg")
 注：图中GATE CLIENT（项目名称“IOTGateConsole”，项目地址：https://gitee.com/willbeahero/IOTGateConsole ） 是一个 Spring Boot 3.5 Web 工程，用户登录之后可以查看当前 GATE CLUSTER 的运行状态监控，并可执行网关规约解析服务的启动、关闭、新增、删除等操作：
 
-![节点管理（动态注册节点监控）](docs/screenshots/node-manage-v2.png)
+![节点管理（动态注册节点监控）](docs/screenshots/node-manage-v2.2.png)
 - **节点管理**：实时展示网关节点列表，区分**动态注册**（网关 `-c -r` 主动注册，含最近心跳、在线时长）与**静态配置**（application.properties 中 gate.nodes 兜底）两种来源，节点在线状态、RPC 连通状态一目了然
 
 ![规约管理（多规约策略配置）](docs/screenshots/strategy-page-v2.png)
 - **规约管理**：远程开启/关闭/新增/删除网关多规约解析服务，规约参数（大小端、长度域偏移/长度、端口等）在线维护，变更实时同步到网关
 
-![AI智能体对话解析](docs/screenshots/bot-chat-result.png)
+![AI智能体对话解析](docs/screenshots/bot-chat-v2.2.png)
 - **AI 智能体（v2.2）**：内置 LangChain4j 悬浮机器人，粘贴协议**帧结构描述**即可由大模型自动提取长度域信息，推导拆包/黏包解码参数并一键填充到规约表单
 
-![大模型配置面板](docs/screenshots/bot-settings.png)
+![大模型配置面板](docs/screenshots/bot-settings-v2.2.png)
 - **大模型配置**：厂商无关（DeepSeek/通义/GLM/Ollama 等任意 OpenAI 兼容接口），可视化修改模型地址/Key/温度等，保存即时生效无需重启
 
 更多关于IOTGateConsole的说明请到博客中查看 
