@@ -2,6 +2,16 @@
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0705/083825_8bdcc48e_1038477.png "IOTGate_logo.png")
 
+> ### 版本升级公告（2026-08）
+> **IOTGate 正式升级为 AI 智能体版本（v2.2）**，与 IOTGateConsole 智能体控制台配套，形成"网关 + AI 智能体管理平台"完整部署形态：
+>
+> - **AI 智能体（LangChain4j）**：粘贴协议**帧结构描述**，大模型自动提取长度域信息、推导拆包/黏包解码参数，一键填充规约表单
+> - **动态节点发现**：网关 `-c -r` 主动注册 + 10s 心跳 + 404 自愈重注册，控制台实时监控节点状态
+> - **规约远程管理**：在线开启/关闭/新增/删除多规约解析服务，变更实时同步网关
+> - **大模型厂商无关**：支持 DeepSeek / 通义 / GLM / Ollama 等任意 OpenAI 兼容接口，可视化配置即时生效
+>
+> 管理平台（IOTGateConsole）：https://gitee.com/willbeahero/IOTGateConsole
+
 ### GitHub项目地址（源码优先更新码云仓库）
 https://github.com/BrianApple/IOTGate
 
@@ -117,6 +127,7 @@ IOTGate 网关与 IOTGateConsole 管理平台是两个独立工程，组合成�
 - IOTGate-v2.0.2.release    解决了大家反应的一些bug，优化了内存泄漏异常，单机版本增加了配置单个规约心跳的配置选项，使得不同规约心跳的管理更加灵活！
 - IOTGate-v2.0.3  IOTGate第一个正式发行版，可执行jar包下载地址 ：https://gitee.com/willbeahero/IOTGate/attach_files/454348/download
 前置网关演示demo下载 ：https://gitee.com/willbeahero/IOTGate/attach_files/454354/download		
+- **IOTGate v2.2（AI 智能体版，2026-08 正式升级）**：内置 LangChain4j AI 智能体，配合 IOTGateConsole v2.2 智能体控制台（节点监控/规约启停/AI 对话解析），形成完整智能体部署形态
 - master 基本功能开发完成，已经支持多规约本地配置以及IOTGateConsole远程开启/关闭/新增/删除网关多规约服务功能。后续master会继续扩展相关功能
 - **master（2026-08 架构演进）**：去除 Zookeeper 依赖（集群模式改 `-m` 直连前置，数据通道零改动）；新增 `-c -r` 网关主动注册模式（HTTP 注册 + 10s 心跳 + 404 自愈重注册），与 IOTGateConsole v2.2 智能体版（节点监控/规约启停/AI 智能体）配套形成完整部署形态
 
