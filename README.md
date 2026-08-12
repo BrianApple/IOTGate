@@ -3,13 +3,13 @@
 # IOTGate —— 高性能物联网智能网关（Netty 多规约）
 
 > Java 版基于 **Netty** 的物联网高并发智能网关，支持多规约解析与设备接入，单机/集群灵活部署。
-> **v2.2 起升级为 AI 智能体版本**，与 [IOTGateConsole](https://gitee.com/willbeahero/IOTGateConsole) 智能体控制台配套，形成「网关 + AI 智能体管理平台」完整部署形态。
+> **v3.0.1 全新升级为 AI 智能体版本**，与 [IOTGateConsole](https://gitee.com/willbeahero/IOTGateConsole) 智能体控制台配套，形成「网关 + AI 智能体管理平台」完整部署形态。
 
 [![文档站](https://img.shields.io/badge/📚%20文档站-BrianApple.github.io-38bdf8)](https://BrianApple.github.io/docs/iotgate/intro)
 [![Gitee Stars](https://img.shields.io/badge/dynamic/json?label=Gitee%20Stars&query=stargazers_count&url=https%3A%2F%2Fgitee.com%2Fapi%2Fv5%2Frepos%2Fwillbeahero%2FIOTGate&color=red)](https://gitee.com/willbeahero/IOTGate)
 [![GPL-2.0](https://img.shields.io/badge/License-GPL--2.0-blue.svg)](LICENSE)
 
-> **版本升级公告（2026-08）**：IOTGate 正式升级为 **AI 智能体版本（v2.2）**——粘贴协议**帧结构描述**，大模型自动提取长度域信息、推导拆包/黏包解码参数，一键填充规约表单；支持动态节点发现（`-c -r` 主动注册 + 10s 心跳 + 404 自愈）、规约远程管理、大模型厂商无关（DeepSeek/通义/GLM/Ollama）。
+> **版本升级公告（2026-08）**：IOTGate **全新升级为 AI 智能体版本（v3.0.1）**——粘贴协议**帧结构描述**，大模型自动提取长度域信息、推导拆包/黏包解码参数，一键填充规约表单；支持动态节点发现（`-c -r` 主动注册 + 10s 心跳 + 404 自愈）、规约远程管理、大模型厂商无关（DeepSeek/通义/GLM/Ollama）。
 
 ---
 
@@ -19,7 +19,7 @@
 |---|---|
 | **高并发** | 单网关单前置 **8000+ 心跳/秒**，20W 在线终端（长连接）内存占用约 1G（本地压测） |
 | **多规约支持** | modbus TCP / IEC 104 / DLT 645 等内置规约，可扩展接入新规约 |
-| **AI 智能体（v2.2）** | 粘贴帧结构描述 → 大模型推导拆包/黏包解码参数 → 一键填充规约表单 |
+| **AI 智能体（v3.0.1）** | 粘贴帧结构描述 → 大模型推导拆包/黏包解码参数 → 一键填充规约表单 |
 | **动态节点发现** | 网关 `-c -r` 主动注册 + 心跳 + 404 自愈重注册，控制台实时监控 |
 | **规约远程管理** | 在线开启/关闭/新增/删除多规约解析服务，变更实时同步网关 |
 | **集群部署** | v2.0 起去除 Zookeeper，`-m` 直连前置，数据通道零改动 |
@@ -36,7 +36,7 @@
 
 ## 📸 截图
 
-| 登录页（v2.2） | 节点管理（动态注册监控） |
+| 登录页（v3.0.1） | 节点管理（动态注册监控） |
 |---|---|
 | ![登录页](docs/screenshots/login-v2.2-new.png) | ![节点管理](docs/screenshots/node-manage-v2.2.png) |
 
@@ -76,9 +76,10 @@ java -jar iotGate.jar -n 1 -f /path/iotGate.conf -c -r 192.168.1.10:8686 -m 前�
 
 ## 📌 版本
 
-- **v2.2（AI 智能体版，2026-08 正式升级）**：内置 LangChain4j AI 智能体，配合 IOTGateConsole v2.2 形成完整智能体部署形态
+- **v3.0.1（AI 智能体版，2026-08 全新升级）**：正式声明智能体版本——内置 LangChain4j AI 智能体，配合 IOTGateConsole 形成完整智能体部署形态
+- **v2.2**：AI 智能体过渡版本（2026-08），确立「网关 + AI 智能体管理平台」形态
 - **v2.0.3**：第一个正式发行版（[可执行 jar 下载](https://gitee.com/willbeahero/IOTGate/attach_files/454348/download)）
-- **v3.x（开发中）**：支持大模型 MCP 协议，基于大模型交互对话创建 IOTGate 通信协议代理
+- **v3.x（路线图）**：支持大模型 MCP 协议，基于大模型交互对话创建 IOTGate 通信协议代理
 
 ## 👥 部分已知用户
 
