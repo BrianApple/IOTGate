@@ -1,4 +1,4 @@
-![IOTGate Logo](https://images.gitee.com/uploads/images/2020/0705/083825_8bdcc48e_1038477.png)
+![IOTGate Logo](iotgate-logo.png)
 
 # IOTGate —— 高性能物联网智能网关（Netty 多规约）
 
