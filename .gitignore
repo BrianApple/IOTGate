@@ -16,3 +16,6 @@ target/
 .idea/
 # JVM crash logs
 hs_err_pid*.log
+
+# 本地品牌素材归档（logo 母版与多规格派生图，不入库避免体积膨胀）
+/logos/
